@@ -1,33 +1,70 @@
 # vitor-plugins
 
-Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
+> 🌐 **This README is bilingual — English first, Português logo abaixo.**
+> [→ Pular para a versão em português](#portugues)
 
-## Plugins
+Personal plugin marketplace for [Claude Code](https://code.claude.com).
 
-| Plugin          | Versão | Descrição                                                                 |
-|-----------------|--------|---------------------------------------------------------------------------|
-| `commit-helper` | 1.1.1  | Gera mensagens de commit no padrão Conventional Commits a partir do stage ou arquivo(s) referenciado(s). |
-| `desrobotizar`  | 2.0.0  | Remove sinais de escrita gerada por IA em textos em pt-BR, detectando 40 padrões típicos de LLM. |
+## English
 
-## Instalação (em qualquer máquina)
+### Plugins
+
+| Plugin          | Version | Description                                                        | Details |
+|-----------------|---------|--------------------------------------------------------------------|---------|
+| `commit-helper` | 1.1.1   | Generates Conventional Commits messages from your staged changes.  | [docs/commit-helper.md](docs/commit-helper.md) |
+| `desrobotizar`  | 2.0.1   | Removes AI-writing tells from Brazilian Portuguese text (40 patterns). | [docs/desrobotizar.md](docs/desrobotizar.md) *(pt-BR)* |
+
+### Installation
 
 ```
 /plugin marketplace add VitorDiToro/claude-plugins
 /plugin install commit-helper@vitor-plugins
+/plugin install desrobotizar@vitor-plugins
 ```
 
-> Repositório: https://github.com/VitorDiToro/claude-plugins
+### Updating
 
-### Testar localmente antes de publicar
-
-Dá para apontar o marketplace para a pasta local, sem GitHub:
+After a new release, update your machines with:
 
 ```
-/plugin marketplace add "/home/vitor/Área de trabalho/claude-plugins"
+/plugin marketplace update vitor-plugins
+```
+
+Or open the interactive manager with `/plugin`.
+
+### For developers
+
+Repository structure, versioning, the release workflow, local testing, and how to add a new plugin
+live in **[docs/development.md](docs/development.md)**.
+
+> Repository: https://github.com/VitorDiToro/claude-plugins
+
+---
+
+<a name="portugues"></a>
+
+## Português
+
+Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
+
+### Plugins
+
+| Plugin          | Versão | Descrição                                                              | Detalhes |
+|-----------------|--------|------------------------------------------------------------------------|----------|
+| `commit-helper` | 1.1.1  | Gera mensagens no padrão Conventional Commits a partir do seu stage.   | [docs/commit-helper.md](docs/commit-helper.md) |
+| `desrobotizar`  | 2.0.1  | Remove sinais de escrita gerada por IA em textos em pt-BR (40 padrões). | [docs/desrobotizar.md](docs/desrobotizar.md) |
+
+### Instalação
+
+```
+/plugin marketplace add VitorDiToro/claude-plugins
 /plugin install commit-helper@vitor-plugins
+/plugin install desrobotizar@vitor-plugins
 ```
 
-### Atualizar depois de um `git push`
+### Atualizar
+
+Depois de um novo release, atualize nas máquinas com:
 
 ```
 /plugin marketplace update vitor-plugins
@@ -35,33 +72,9 @@ Dá para apontar o marketplace para a pasta local, sem GitHub:
 
 Ou abra o gerenciador interativo com `/plugin`.
 
-## Estrutura
+### Para desenvolvedores
 
-```
-claude-plugins/                       # repo = marketplace
-├── .claude-plugin/
-│   └── marketplace.json              # catálogo (versão DO marketplace)
-├── README.md
-└── commit-helper/                    # plugin
-    ├── .claude-plugin/
-    │   └── plugin.json               # versão DO plugin
-    └── skills/
-        └── commit-helper/
-            ├── SKILL.md              # versão DA skill (metadata.version)
-            └── CHANGELOG.md
-```
+A estrutura do repositório, o versionamento, o fluxo de publicação, o teste local e como adicionar
+um novo plugin estão em **[docs/development.md](docs/development.md)** (em inglês).
 
-## Versionamento
-
-Há três versões independentes:
-
-- **Marketplace** → `.claude-plugin/marketplace.json` (`metadata.version`): versiona o catálogo.
-- **Plugin** → `commit-helper/.claude-plugin/plugin.json` (`version`): versiona o pacote.
-- **Skill** → `commit-helper/skills/commit-helper/SKILL.md` (`metadata.version`): versiona o conteúdo.
-
-Por enquanto o **plugin** e a **skill** caminham juntos. Ao lançar uma mudança na skill:
-
-1. Atualize `metadata.version` + `metadata.updated` no `SKILL.md`.
-2. Atualize `version` no `plugin.json` para o mesmo número.
-3. Adicione a entrada no `CHANGELOG.md` da skill.
-4. Suba a versão do `marketplace.json` apenas quando o **catálogo** mudar (ex.: adicionar/remover um plugin).
+> Repositório: https://github.com/VitorDiToro/claude-plugins
