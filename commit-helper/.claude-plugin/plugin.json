@@ -1,6 +1,6 @@
 {
   "name": "commit-helper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Gera mensagens de commit no padrão Conventional Commits v1.0.0 a partir das mudanças em stage, com confirmação antes de commitar.",
   "author": {
     "name": "Vitor",

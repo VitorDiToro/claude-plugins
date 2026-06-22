@@ -4,6 +4,13 @@ All notable changes to the `commit-helper` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `version` / `updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.1.1 - 2026-06-22
+
+### Changed
+- User-facing prompts and warnings now follow the language the user is conversing in
+  (Portuguese, English, Spanish, German, …) instead of being fixed to Portuguese.
+  The commit message itself stays in English regardless of the conversation language.
+
 ## 1.1.0 - 2026-06-22
 
 ### Added

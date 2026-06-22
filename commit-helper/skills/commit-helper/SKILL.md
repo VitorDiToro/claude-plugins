@@ -2,22 +2,26 @@
 name: commit-helper
 description: Use when writing a commit message, committing staged changes, or asked for a Conventional Commits message. Keywords - git commit, conventional commits, commit message, staged changes.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
   updated: "2026-06-22"
 ---
 
 # Generating Commit Messages
 
-Write commit messages in **English** (matching this repository's history),
-following the Conventional Commits v1.0.0 specification. Keep the language split:
-**commit messages in English**, but **user-facing prompts and warnings in Portuguese** —
-do not normalize either side to a single language.
+Write the commit message itself in **English** (matching this repository's history),
+following the Conventional Commits v1.0.0 specification. This holds **even when the
+conversation is in another language** — the commit text is always English.
+
+Everything you say **to the user** — prompts, questions, warnings — goes in **whatever
+language they are using in this conversation** (Portuguese, English, Spanish, German, …).
+Mirror the user's language; do not force the user-facing side into a fixed one.
 
 ## Instructions
 
 1. **Capture and validate staged changes:** Run `git diff --staged` and capture its output.
-   - If the output is **empty**, **stop immediately** and inform the user:
-     > ⚠️ Nenhuma alteração em stage encontrada. Use `git add <arquivo>` para preparar as mudanças antes de gerar a mensagem de commit.
+   - If the output is **empty**, **stop immediately**: tell the user — in the language they
+     are using in this conversation — that no staged changes were found and that they should
+     run `git add <file>` to stage changes before a commit message can be generated. Do not proceed.
    - If the output is **non-empty**, use it directly to inspect the changes — no second `git` call needed.
 
 2. **Compose the message** following Conventional Commits v1.0.0:
