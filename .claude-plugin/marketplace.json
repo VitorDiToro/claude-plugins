@@ -6,13 +6,18 @@
   },
   "metadata": {
     "description": "Marketplace pessoal de plugins do Claude Code.",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "commit-helper",
       "source": "./commit-helper",
       "description": "Gera mensagens de commit no padrão Conventional Commits a partir das mudanças em stage."
+    },
+    {
+      "name": "desrobotizar",
+      "source": "./desrobotizar",
+      "description": "Remove sinais de escrita gerada por IA em textos em português do Brasil, detectando 40 padrões típicos de LLM em pt-BR."
     }
   ]
 }

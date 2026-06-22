@@ -1,0 +1,11 @@
+{
+  "name": "desrobotizar",
+  "version": "2.0.0",
+  "description": "Remove sinais de escrita gerada por IA em textos em português do Brasil e os reescreve para soarem naturais, detectando 40 padrões típicos de LLM em pt-BR.",
+  "author": {
+    "name": "Vitor",
+    "email": "vitorrditoro@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["humanizar", "pt-br", "ia", "escrita", "texto", "revisão", "desrobotizar"]
+}

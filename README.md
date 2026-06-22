@@ -7,6 +7,7 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 | Plugin          | Versão | Descrição                                                                 |
 |-----------------|--------|---------------------------------------------------------------------------|
 | `commit-helper` | 1.1.1  | Gera mensagens de commit no padrão Conventional Commits a partir do stage ou arquivo(s) referenciado(s). |
+| `desrobotizar`  | 2.0.0  | Remove sinais de escrita gerada por IA em textos em pt-BR, detectando 40 padrões típicos de LLM. |
 
 ## Instalação (em qualquer máquina)
 
