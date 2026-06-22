@@ -11,11 +11,11 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 ## Instalação (em qualquer máquina)
 
 ```
-/plugin marketplace add <seu-usuario>/claude-plugins
+/plugin marketplace add VitorDiToro/claude-plugins
 /plugin install commit-helper@vitor-plugins
 ```
 
-> Troque `<seu-usuario>` pelo seu usuário do GitHub depois de publicar o repositório.
+> Repositório: https://github.com/VitorDiToro/claude-plugins
 
 ### Testar localmente antes de publicar
 
