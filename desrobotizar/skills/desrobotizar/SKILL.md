@@ -1,17 +1,11 @@
 ---
 name: desrobotizar
-description: |
-  Remove sinais de escrita gerada por IA em textos em português do Brasil e
-  os reescreve para soarem naturais e humanos. Detecta padrões típicos de LLM
-  em pt-BR: "é importante ressaltar", gerúndio vazio, "no cenário atual",
-  rebuscamento jurídico ("outrossim", "destarte"), "através de" para tudo,
-  paralelismo "não é X, é Y", mesóclise pedante, abstrações vagas, ausência
-  de opinião, transições padronizadas, alucinação de fontes, traduções
-  literais do inglês — além dos padrões universais como travessão em excesso,
-  regra de três, negrito decorativo, Title Case e conclusões otimistas
-  genéricas. Acione sempre que o usuário pedir para "humanizar texto",
-  "tirar cara de IA", "deixar menos robótico", "soar natural", revisar
-  estilo em pt-BR ou similar — mesmo sem essas palavras exatas.
+description: >-
+  Use quando o usuário quiser humanizar ou tirar a "cara de IA" de um texto em
+  português do Brasil — pedidos como "humanizar texto", "tirar cara de IA",
+  "deixar menos robótico", "soar natural", ou revisar o estilo de um texto
+  gerado por LLM em pt-BR (gerúndio vazio, "não é X, é Y", "outrossim",
+  travessão em excesso), mesmo sem essas palavras exatas.
 license: MIT
 allowed-tools:
   - Read
@@ -21,7 +15,7 @@ allowed-tools:
   - Glob
   - AskUserQuestion
 metadata:
-  version: 2.0.0
+  version: 2.0.1
   updated: "2026-06-22"
 ---
 

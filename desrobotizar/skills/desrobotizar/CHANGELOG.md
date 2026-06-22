@@ -4,6 +4,15 @@ All notable changes to the `desrobotizar` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 2.0.1 - 2026-06-22
+
+### Changed
+- Trimmed the `description` frontmatter to focus on triggering conditions
+  (per skill-discovery best practices), moving the full pattern catalogue out of
+  the description and into the body where it already lives. Validated with
+  subagent discovery tests that triggering still fires on paraphrased requests
+  (no exact keywords) and stays quiet on unrelated requests.
+
 ## 2.0.0 - 2026-06-22
 
 ### Added
