@@ -6,7 +6,7 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 
 | Plugin          | Versão | Descrição                                                                 |
 |-----------------|--------|---------------------------------------------------------------------------|
-| `commit-helper` | 1.1.0  | Gera mensagens de commit no padrão Conventional Commits a partir do stage. |
+| `commit-helper` | 1.1.0  | Gera mensagens de commit no padrão Conventional Commits a partir do stage ou arquivo(s) referenciado(s). |
 
 ## Instalação (em qualquer máquina)
 
