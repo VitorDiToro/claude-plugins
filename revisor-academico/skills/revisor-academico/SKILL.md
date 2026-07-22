@@ -155,7 +155,7 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 
 ## Checklist de revisão
 
-**LaTeX / estrutura**
+### LaTeX / estrutura
 
 **Referências cruzadas e rótulos**
 - `\ref` vs `\label` trocados; rótulos definidos e nunca referenciados (órfãos)
@@ -203,9 +203,41 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   do texto real do documento — afeta hifenização e nomes automáticos
   ("Capítulo"/"Chapter", "Figura"/"Figure").
 
-**Gramática e ortografia** — acentuação, crase, concordância, regência, pontuação, digitação.
+### Gramática e ortografia
 
-**Terminologia e consistência**
+**Crase**
+- Crase indevida ou ausente diante de pronomes indefinidos, substantivos femininos
+  determinados, etc. (ex.: "à cada" quando o certo é "a cada"; "em relação a integração"
+  quando falta a crase; "graças a isolação" quando falta a crase).
+
+**Concordância verbal e nominal**
+- Verbo não concorda em número/pessoa com o sujeito (ex.: "que compõe" para sujeito
+  plural, deveria ser "que compõem"; "Os resultado" deveria ser "Os resultados").
+- Concordância de gênero entre sujeito e predicativo (ex.: "a visão... é o mesmo"
+  deveria ser "é a mesma").
+
+**Regência verbal e nominal**
+- Verbo usado com a preposição errada ou sem o conectivo exigido (ex.: "permitiu a
+  rede estabelecer" — falta "à" + infinitivo ou "que" + subjuntivo).
+
+**Ortografia e acentuação**
+- Palavras grafadas incorretamente ou sem o acento exigido (ex.: "fléxivel" em vez de
+  "flexível"; "posível" em vez de "possível"; "referencia" sem acento).
+
+**Pontuação e espaçamento**
+- Vírgula sem função sintática (ex.: "Aproximadamente, 6,5 kg").
+- Espaços duplicados ou mal posicionados (antes de vírgula, logo após chave de
+  abertura de comando, etc.).
+
+**Digitação e resíduos de edição**
+- Palavras ou artigos duplicados por erro de cópia/edição (ex.: "um uma antena", "de
+  de forma gráfica", "protocolo... protocolo").
+- Duas construções verbais coladas sem conectivo, resultando em frase agramatical
+  (ex.: "os testes foram realizados concentraram-se").
+- Palavras corrompidas/fundidas incorretamente (ex.: "deo enlace" em vez de "do
+  enlace").
+
+### Terminologia e consistência
 
 **Grafia e padronização de termos**
 - Grafias divergentes do mesmo termo (ex.: front-end/frontend/Backend);
@@ -246,7 +278,7 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - Separador decimal inconsistente (vírgula vs ponto); unidades grafadas de
   formas diferentes (ex.: "MB" vs "Mb").
 
-**Estrutura e rigor acadêmico**
+### Estrutura e rigor acadêmico
 
 **Tom e voz acadêmica**
 - Superlativos/marketing (ex.: "revolucionário", "incrível") e
@@ -272,7 +304,7 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - Resumo/abstract, palavras-chave, sumário, lista de abreviaturas —
   presentes conforme o padrão que o próprio documento já adota.
 
-**Conteúdo técnico**
+### Conteúdo técnico
 
 **Precisão e alegações**
 - Afirmações absolutas indevidas (ex.: "o pen-test provou que o sistema
