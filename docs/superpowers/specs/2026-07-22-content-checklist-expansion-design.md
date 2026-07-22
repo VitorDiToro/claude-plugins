@@ -192,5 +192,5 @@ seção `## Checklist de revisão`:
 
 Sem mudança de formato de saída, severidade, IDs ou processo — só o
 conteúdo do checklist e dos guardrails de apoio ao revisor. Segue o mesmo
-padrão de release já usado (bump de versão patch, `CHANGELOG.md`,
+padrão de release já usado (bump de versão minor, `CHANGELOG.md`,
 `README.md`) descrito em `docs/development.md`.
