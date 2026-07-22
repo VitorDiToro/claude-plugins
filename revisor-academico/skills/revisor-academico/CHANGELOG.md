@@ -4,6 +4,18 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.0.1 - 2026-07-22
+
+### Changed
+- Expanded the "LaTeX / estrutura" checklist item from a flat 5-bullet list
+  into 6 grouped subcategories: Referências cruzadas e rótulos, Listas
+  automáticas, Floats (consistência e legendas), Bibliografia e citações,
+  Hyperref e links, Idioma e configuração técnica.
+- Scoped to checks doable by static `.tex` reading only — no compilation
+  step required, since reviewed documents are authored in Overleaf.
+- Added explicit guidance to flag every use of `[H]` as an attention point,
+  since it can strongly affect the final PDF layout.
+
 ## 1.0.0 - 2026-07-22
 
 ### Added
