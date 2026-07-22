@@ -4,6 +4,25 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.2.0 - 2026-07-22
+
+### Changed
+- Replaced the single-pass review process with a default 2-reviewer + 1-consolidator flow:
+  Revisor 1 (`sonnet`, effort `xhigh`) and Revisor 2 (`opus`, effort `xhigh`) independently
+  review the whole document in parallel, writing raw findings to scratch files; a consolidator
+  (`opus`, effort `max`) unions their findings, resolves severity conflicts to the higher value,
+  re-reads the source only for findings the two reviewers contradict each other on, and writes
+  the final output.
+- Added `Agent` to `allowed-tools` to support the new subagent dispatch.
+- "Visão geral" now documents this as two independent reviews consolidated — a probabilistic
+  mitigation of false negatives, not a guarantee of full coverage.
+- The final report temporarily includes both reviewers' scratch-file paths, for inspection while
+  this flow is validated in real use (planned for removal in a future release).
+
+Motivated by `resultados/comparacao_v1.0.0_vs_v1.1.0.md`, which showed two independent runs over
+the same document catching partially different real issues, even within a checklist section
+that hadn't changed between the compared versions.
+
 ## 1.1.1 - 2026-07-22
 
 ### Changed
