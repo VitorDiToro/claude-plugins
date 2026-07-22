@@ -177,7 +177,7 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    independente de cada revisor, onde a redundância dos dois ainda tem valor.
 
 2. **Despachar 2 revisores independentes, em paralelo**, cada um com a lista de
-   arquivos e o perfil de padrão do passo 1, e o checklist completo abaixo:
+   arquivos, o perfil de padrão do passo 1, e o checklist completo abaixo:
    - **Revisor 1** — modelo `sonnet`, effort `xhigh`.
    - **Revisor 2** — modelo `opus`, effort `xhigh`.
    - (Esta e a instrução de effort do consolidador no passo 3 são intenção de
