@@ -4,6 +4,20 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.1.0 - 2026-07-22
+
+### Changed
+- Expanded the "Terminologia e consistência", "Estrutura e rigor
+  acadêmico", and "Conteúdo técnico" checklist items from single dense
+  bullets into grouped subcategories, mirroring the earlier
+  "LaTeX / estrutura" treatment.
+- Added 3 guardrails to "Erros comuns a evitar" around judgment
+  calibration: prefer flagging over silently omitting a real issue
+  (false negatives are worse than false positives), don't treat an
+  assertive claim as automatically wrong, and don't apply an "excessive
+  occurrence" bar to checklist items that are objective on a single
+  occurrence (e.g. a re-expanded acronym).
+
 ## 1.0.1 - 2026-07-22
 
 ### Changed
