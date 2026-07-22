@@ -14,7 +14,7 @@ allowed-tools:
   - Grep
   - Bash
 metadata:
-  version: 1.1.0
+  version: 1.1.1
   updated: 2026-07-22
 ---
 

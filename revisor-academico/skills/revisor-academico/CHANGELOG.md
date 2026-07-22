@@ -4,6 +4,17 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.1.1 - 2026-07-22
+
+### Changed
+- Converted the 5 top-level "Checklist de revisão" categories (LaTeX / estrutura, Gramática e
+  ortografia, Terminologia e consistência, Estrutura e rigor acadêmico, Conteúdo técnico) from
+  bold text to `###` headings, for consistent Markdown structure and easier navigation.
+  Subcategories remain in bold.
+- Expanded "Gramática e ortografia" from a single dense bullet into 6 subcategories: Crase,
+  Concordância verbal e nominal, Regência verbal e nominal, Ortografia e acentuação, Pontuação
+  e espaçamento, Digitação e resíduos de edição.
+
 ## 1.1.0 - 2026-07-22
 
 ### Changed
