@@ -4,6 +4,21 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.2.1 - 2026-07-22
+
+### Added
+- `scripts/perfil-padrao.sh` — extracts a "perfil de padrão do documento" (7 objective facts:
+  float specifiers, acronym mechanism, citation style, label prefix convention, table style,
+  language config, quote style) from a LaTeX project via cheap `grep`/`sed` scans, no semantic
+  reading.
+
+### Changed
+- `## Processo` step 1 now runs this script once and shares its output with both reviewers and
+  the consolidator (steps 2-3), instead of each independently (and potentially inconsistently)
+  rediscovering the same objective facts. Semantic judgments (tone, italics-for-foreign-terms,
+  technical domain, argumentative rigor) are explicitly excluded from the profile and remain
+  independent per-reviewer, where redundancy across the 2 reviewers still has value.
+
 ## 1.2.0 - 2026-07-22
 
 ### Changed
