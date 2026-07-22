@@ -205,18 +205,95 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 
 **Gramática e ortografia** — acentuação, crase, concordância, regência, pontuação, digitação.
 
-**Terminologia e consistência** — grafias divergentes do mesmo termo (ex.:
-front-end/frontend/Backend); acrônimos expandidos na 1ª ocorrência e listados.
+**Terminologia e consistência**
 
-**Estrutura e rigor acadêmico** — tom impessoal (sinalize superlativos/marketing,
-coloquialismos, analogias/didatismo em excesso); afirmações avaliativas sem evidência;
-seções que antecipam a conclusão; redundância; lacunas de numeração de seções;
-elementos ABNT esperados pelo padrão do documento (resumo, palavras-chave, referências).
+**Grafia e padronização de termos**
+- Grafias divergentes do mesmo termo (ex.: front-end/frontend/Backend);
+  nomes próprios/produtos grafados de formas diferentes (ex.: "GitHub" vs
+  "Github").
+- Termos em inglês (anglicismos) sem itálico (`\textit`) — a norma exige
+  itálico para estrangeirismos; verificar se **todas** as ocorrências do
+  mesmo termo usam `\textit` (não só consistência entre si, mas ausência em
+  algum ponto). **Exceção:** nomes próprios e marcas (ex.: "GitHub",
+  "Python", "Docker") não entram em itálico mesmo sendo em inglês.
 
-**Conteúdo técnico** — precisão das afirmações; alegações absolutas indevidas
-(ex.: "o pen-test provou que o sistema está seguro"); **ausência de resultados
-quantitativos** onde caberiam (cobertura, contagem de issues antes/depois, nº de
-vulnerabilidades); citações a fontes (NIST, RFC, OWASP) sem referência.
+**Acrônimos e siglas**
+- Sigla usada antes de ser expandida na 1ª ocorrência; sigla nunca
+  expandida.
+- Expansão da sigla **digitada manualmente** no texto (ex.: "Interface de
+  Programação de Aplicações (API)") em vez de gerida por um comando de
+  acrônimo (`\ac{...}` do pacote `acro`/`acronym`). **Sinalizar sempre como
+  ponto de atenção, mesmo quando está correta** — é frágil: nada garante
+  que a mesma sigla não seja expandida de novo em outro capítulo sem o
+  autor perceber, já que não há rastreamento automático.
+- Sigla expandida mais de uma vez ao longo do documento (redundante) —
+  mais grave quando a expansão é manual (ponto anterior), mas também ocorre
+  se o documento usa `\ac`/`acro` de forma inconsistente (macro em alguns
+  lugares, texto digitado em outros). **Sinalizar mesmo numa única
+  reocorrência** — é objetivo, não exige um padrão recorrente para ser um
+  problema.
+- Gênero gramatical inconsistente para a mesma sigla (ex.: "a API" numa
+  seção, "o API" em outra).
+
+**Nomenclatura técnica consistente**
+- Mesmo conceito nomeado de formas diferentes ao longo do texto (ex.: ora
+  "modelo", ora "algoritmo", para o mesmo objeto) sem indicar que são
+  sinônimos.
+- Termo técnico traduzido em algumas ocorrências e mantido em inglês em
+  outras (ex.: "framework" vs "arcabouço").
+
+**Unidades e formatos numéricos**
+- Separador decimal inconsistente (vírgula vs ponto); unidades grafadas de
+  formas diferentes (ex.: "MB" vs "Mb").
+
+**Estrutura e rigor acadêmico**
+
+**Tom e voz acadêmica**
+- Superlativos/marketing (ex.: "revolucionário", "incrível") e
+  coloquialismos — **sinalizar toda ocorrência**, sem exceção.
+- Uso **excessivo** de analogias ou didatismo — sinalizar quando o padrão
+  se repete ao longo do texto, não uma analogia pontual isolada.
+- Uso de primeira pessoa quando o padrão do próprio documento é impessoal
+  (ou vice-versa).
+
+**Rigor argumentativo**
+- Afirmações avaliativas sem evidência; generalização do resultado de um
+  teste/experimento único para uma conclusão universal.
+- Seções que antecipam a conclusão antes de ela ser sustentada pelos
+  dados.
+
+**Organização e fluxo**
+- Redundância de conteúdo entre seções; lacunas ou saltos na numeração de
+  seções/capítulos.
+- Objetivos declarados na introdução que não são todos retomados na
+  conclusão.
+
+**Elementos ABNT esperados**
+- Resumo/abstract, palavras-chave, sumário, lista de abreviaturas —
+  presentes conforme o padrão que o próprio documento já adota.
+
+**Conteúdo técnico**
+
+**Precisão e alegações**
+- Afirmações absolutas indevidas (ex.: "o pen-test provou que o sistema
+  está seguro").
+
+**Evidência quantitativa**
+- Ausência de resultados quantitativos onde caberiam (cobertura, contagem
+  de issues antes/depois, nº de vulnerabilidades).
+- Resultado apresentado sem unidade, baseline de comparação ou tamanho de
+  amostra.
+
+**Fundamentação e citação técnica**
+- Menções a normas/fontes técnicas (NIST, RFC, OWASP, ISO) sem referência
+  bibliográfica formal.
+- Ferramenta/tecnologia citada sem versão ou contexto de uso, quando isso
+  afeta a reprodutibilidade.
+
+**Coerência metodológica**
+- Método descrito na seção de metodologia não bate com o que foi de fato
+  relatado nos resultados.
+- Limitações do estudo evidentes mas não mencionadas.
 
 ## Erros comuns a evitar
 
@@ -226,3 +303,15 @@ vulnerabilidades); citações a fontes (NIST, RFC, OWASP) sem referência.
 - Misturar severidades fora de ordem dentro de um arquivo.
 - Itens sem `arquivo:linha` real ou sem ID único.
 - Impor regra ABNT rígida contra um padrão interno coerente do documento.
+- **Sub-relatar por complacência** — não deixar de sinalizar um problema
+  real por "não querer ser chato". Em caso de dúvida entre reportar ou
+  não, reporte: falso negativo é pior que falso positivo — o autor decide
+  o que acatar, mas só se o apontamento existir.
+- **Confundir afirmação assertiva com afirmação errada** — sinalizar rigor
+  argumentativo só quando falta evidência ou a generalização é indevida,
+  não simplesmente porque o trecho é direto/categórico.
+- **Aplicar critério de "excesso"/"recorrência" a uma ocorrência isolada**,
+  quando o item do checklist exige recorrência real (ex.: marcar uma única
+  analogia como "uso excessivo de didatismo"). Itens que são objetivos
+  mesmo numa única ocorrência (ex.: sigla reexpandida) não entram nessa
+  regra.
