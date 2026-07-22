@@ -1,6 +1,6 @@
 # Development guide
 
-This repository **is** a Claude Code plugin marketplace (`vitor-plugins`): a catalog of plugins,
+This repository **is** a Claude Code plugin marketplace (`ditoro-plugins`): a catalog of plugins,
 each shipping one or more skills. There is no build step, runtime, or dependencies — the "code" is
 Markdown skills plus JSON manifests that Claude Code reads.
 
@@ -42,7 +42,7 @@ A skill's frontmatter requires only `name` and `description`; everything under `
 2. `<plugin>/.claude-plugin/plugin.json` — bump `version` to the **same** number.
 3. `<plugin>/skills/<skill>/CHANGELOG.md` — add a new entry at the top.
 4. `README.md` — update the version in the plugins table (**both** language sections).
-5. Commit and push. Installed copies update via `/plugin marketplace update vitor-plugins`.
+5. Commit and push. Installed copies update via `/plugin marketplace update ditoro-plugins`.
 
 Touch `marketplace.json` (`metadata.version` + the `plugins[]` array) **only** when adding or
 removing a plugin from the catalog.
@@ -53,7 +53,7 @@ Point a marketplace at the local checkout instead of GitHub:
 
 ```
 /plugin marketplace add /home/vitor/git/claude-plugins
-/plugin install <plugin>@vitor-plugins
+/plugin install <plugin>@ditoro-plugins
 ```
 
 ## Adding a new plugin

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-This repo **is** a Claude Code plugin marketplace named `vitor-plugins` (published at
+This repo **is** a Claude Code plugin marketplace named `ditoro-plugins` (published at
 https://github.com/VitorDiToro/claude-plugins). Not application code — a catalog of plugins, each
 shipping one or more skills. No build, no tests, no dependencies; the "code" is Markdown skills plus
 JSON manifests that Claude Code reads.

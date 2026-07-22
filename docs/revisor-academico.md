@@ -6,7 +6,7 @@ LaTeX, gramática, terminologia, estrutura, rigor acadêmico e conteúdo técnic
 os resultados como uma **lista de apontamentos em Markdown**, **sem alterar** os seus
 arquivos `.tex`.
 
-> A instalação fica no [README](../README.md) (`/plugin install revisor-academico@vitor-plugins`).
+> A instalação fica no [README](../README.md) (`/plugin install revisor-academico@ditoro-plugins`).
 > Este documento é um aprofundamento de **como a skill funciona**.
 
 ## O que ela faz de diferente

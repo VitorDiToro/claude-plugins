@@ -1,4 +1,4 @@
-# vitor-plugins
+# ditoro-plugins
 
 > 🌐 **This README is bilingual — English first, Português logo abaixo.**
 > [→ Pular para a versão em português](#portugues)
@@ -19,9 +19,9 @@ Personal plugin marketplace for [Claude Code](https://code.claude.com).
 
 ```
 /plugin marketplace add VitorDiToro/claude-plugins
-/plugin install commit-helper@vitor-plugins
-/plugin install desrobotizar@vitor-plugins
-/plugin install revisor-academico@vitor-plugins
+/plugin install commit-helper@ditoro-plugins
+/plugin install desrobotizar@ditoro-plugins
+/plugin install revisor-academico@ditoro-plugins
 ```
 
 ### Updating
@@ -29,7 +29,7 @@ Personal plugin marketplace for [Claude Code](https://code.claude.com).
 After a new release, update your machines with:
 
 ```
-/plugin marketplace update vitor-plugins
+/plugin marketplace update ditoro-plugins
 ```
 
 Or open the interactive manager with `/plugin`.
@@ -61,9 +61,9 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 
 ```
 /plugin marketplace add VitorDiToro/claude-plugins
-/plugin install commit-helper@vitor-plugins
-/plugin install desrobotizar@vitor-plugins
-/plugin install revisor-academico@vitor-plugins
+/plugin install commit-helper@ditoro-plugins
+/plugin install desrobotizar@ditoro-plugins
+/plugin install revisor-academico@ditoro-plugins
 ```
 
 ### Atualizar
@@ -71,7 +71,7 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 Depois de um novo release, atualize nas máquinas com:
 
 ```
-/plugin marketplace update vitor-plugins
+/plugin marketplace update ditoro-plugins
 ```
 
 Ou abra o gerenciador interativo com `/plugin`.

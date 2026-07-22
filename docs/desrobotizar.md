@@ -9,7 +9,7 @@ adicionando padrões específicos do português brasileiro — vícios de LLM co
 "é importante ressaltar", rebuscamento jurídico fora de contexto, paralelismos negativos do tipo
 "não é X, é Y", e muitos outros.
 
-> A instalação fica no [README](../README.md) (`/plugin install desrobotizar@vitor-plugins`).
+> A instalação fica no [README](../README.md) (`/plugin install desrobotizar@ditoro-plugins`).
 > Este documento é um aprofundamento de **como a skill funciona**.
 
 ## Por que uma versão em pt-BR?
