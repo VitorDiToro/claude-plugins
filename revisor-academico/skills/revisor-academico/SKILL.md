@@ -155,22 +155,41 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 > não funciona se a skill for invocada a partir de um subagente que não tenha
 > essa ferramenta disponível.
 
-1. **Mapear o documento** (uma única vez, antes do passo 2). Encontre o arquivo
-   principal (`\documentclass`) e siga todos os `\input`/`\include`. Resolva a
-   lista final de arquivos incluídos — essa lista é compartilhada pelos dois
-   revisores do passo 2 (não deixe cada um resolver isso de novo, por risco de
-   incluir por engano um arquivo de rascunho não referenciado em `main.tex`).
+1. **Mapear o documento e calcular o perfil de padrão** (uma única vez, antes
+   do passo 2). Encontre o arquivo principal (`\documentclass`) e siga todos
+   os `\input`/`\include`. Resolva a lista final de arquivos incluídos — essa
+   lista é compartilhada pelos dois revisores do passo 2 (não deixe cada um
+   resolver isso de novo, por risco de incluir por engano um arquivo de
+   rascunho não referenciado em `main.tex`).
+
+   Execute também `scripts/perfil-padrao.sh <diretório-do-projeto>` para obter
+   um **perfil de padrão do documento**: fatos objetivos (especificadores de
+   float, mecanismo de siglas, estilo de citação/bibliografia, convenção de
+   prefixo de rótulo, estilo de tabela, configuração de idioma, estilo de
+   aspas) extraídos por varredura estrutural barata, **sem** leitura semântica
+   do conteúdo.
+
+   Este perfil é compartilhado pelos dois revisores do passo 2 e pelo
+   consolidador do passo 3 — nenhum dos três precisa (nem deve) redescobrir
+   esses fatos de forma independente. Fatos que exigem leitura semântica (tom
+   de voz, itálico de estrangeirismos, domínio do conteúdo técnico, rigor
+   argumentativo) **não** entram nesse perfil — continuam sendo julgamento
+   independente de cada revisor, onde a redundância dos dois ainda tem valor.
 
 2. **Despachar 2 revisores independentes, em paralelo**, cada um com a lista de
-   arquivos do passo 1 e o checklist completo abaixo:
+   arquivos e o perfil de padrão do passo 1, e o checklist completo abaixo:
    - **Revisor 1** — modelo `sonnet`, effort `xhigh`.
    - **Revisor 2** — modelo `opus`, effort `xhigh`.
    - (Esta e a instrução de effort do consolidador no passo 3 são intenção de
      design: se a ferramenta de despacho disponível não expuser um parâmetro
      de effort, transmita isso como instrução explícita no prompt do
      subagente em vez de assumir que existe um parâmetro para isso.)
-   - Cada revisor detecta o padrão do documento e revisa por todo o checklist,
-     de forma independente (nenhum sabe da existência do outro).
+   - Cada revisor usa o perfil de padrão compartilhado para os fatos objetivos
+     (floats, siglas, citação, rótulos, tabelas, idioma, aspas) e detecta de
+     forma independente os aspectos que exigem leitura semântica (tom, itálico
+     de estrangeirismos, domínio técnico, rigor argumentativo); revisa por todo
+     o checklist, de forma independente do outro revisor (nenhum sabe da
+     existência do outro).
    - Cada revisor escreve seus achados **brutos** — mesmo template de item da
      seção `## Formato de cada item`, mas **sem ID** (o ID final só é atribuído
      na consolidação) — num arquivo de rascunho criado com `mktemp -d`, fora do
@@ -178,7 +197,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      resposta, só um resumo curto e o caminho desse arquivo.
 
 3. **Despachar o consolidador** — modelo `opus`, effort `max` — com os 2
-   arquivos de rascunho e a lista de arquivos do passo 1. O consolidador:
+   arquivos de rascunho, a lista de arquivos e o perfil de padrão do passo 1.
+   O consolidador:
    - Faz a **união** dos achados dos dois revisores (não interseção) — todo
      achado real de qualquer um dos dois entra no resultado final.
    - Casa achados equivalentes pelo **local** (`arquivo:linha`/trecho citado
