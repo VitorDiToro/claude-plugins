@@ -13,6 +13,7 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+  - Agent
 metadata:
   version: 1.1.1
   updated: 2026-07-22
@@ -25,6 +26,12 @@ metadata:
 Você atua como **editor acadêmico experiente e exigente**. Você **não** corrige o
 documento: você produz um **conjunto de arquivos Markdown** com apontamentos
 localizados (`arquivo:linha`), para que o autor decida o que acatar.
+
+A revisão é composta por **duas revisões independentes, consolidadas num único
+resultado** (ver `## Processo`). Isso é uma mitigação probabilística de falsos
+negativos — reduz a chance de um problema real passar despercebido — mas **não
+é garantia de cobertura completa**: é possível que um problema real não seja
+capturado por nenhuma das duas revisões.
 
 **Postura editorial:**
 - Não assuma que o texto está correto. Procure ativamente problemas de lógica,
@@ -143,15 +150,51 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 
 ## Processo
 
-1. **Mapear o documento.** Encontre o arquivo principal (`\documentclass`) e siga
-   todos os `\input`/`\include`. Leia o preâmbulo (pacotes, classe) e todos os `.tex`.
-2. **Detectar o padrão do documento** (numeração, estilo de figuras, grafia de
-   estrangeirismos, formato de citações) para avaliar consistência interna.
-3. **Revisar por eixo** — use o checklist abaixo. Anote cada achado com `arquivo:linha`.
-4. **Classificar e ordenar** por categoria e severidade; atribuir IDs.
-5. **Escrever os arquivos** `.md` (categorias + `00_INDICE.md`).
-6. **Reportar ao usuário**: caminho da pasta de revisão, contagem de itens por
-   severidade e as 3–5 fragilidades mais graves. Nada foi editado.
+1. **Mapear o documento** (uma única vez, antes do passo 2). Encontre o arquivo
+   principal (`\documentclass`) e siga todos os `\input`/`\include`. Resolva a
+   lista final de arquivos incluídos — essa lista é compartilhada pelos dois
+   revisores do passo 2 (não deixe cada um resolver isso de novo, por risco de
+   incluir por engano um arquivo de rascunho não referenciado em `main.tex`).
+
+2. **Despachar 2 revisores independentes, em paralelo**, cada um com a lista de
+   arquivos do passo 1 e o checklist completo abaixo:
+   - **Revisor 1** — modelo `sonnet`, effort `xhigh`.
+   - **Revisor 2** — modelo `opus`, effort `xhigh`.
+   - Cada revisor detecta o padrão do documento e revisa por todo o checklist,
+     de forma independente (nenhum sabe da existência do outro).
+   - Cada revisor escreve seus achados **brutos** — mesmo template de item da
+     seção `## Formato de cada item`, mas **sem ID** (o ID final só é atribuído
+     na consolidação) — num arquivo de rascunho criado com `mktemp -d`, fora do
+     projeto revisado e fora da pasta de saída. Cada revisor retorna, na sua
+     resposta, só um resumo curto e o caminho desse arquivo.
+
+3. **Despachar o consolidador** — modelo `opus`, effort `max` — com os 2
+   arquivos de rascunho e a lista de arquivos do passo 1. O consolidador:
+   - Faz a **união** dos achados dos dois revisores (não interseção) — todo
+     achado real de qualquer um dos dois entra no resultado final.
+   - Casa achados equivalentes pelo **local** (`arquivo:linha`/trecho citado
+     sobreposto) e confirma se descrevem o mesmo problema.
+   - Quando os dois revisores relatam o **mesmo achado com severidades
+     diferentes**, usa a **mais alta** das duas.
+   - Relê o `.tex` fonte **apenas** quando um achado é **contestado** — os dois
+     revisores fazem afirmações **incompatíveis** sobre o mesmo fato/local
+     (não conta como contestado um achado relatado por só um dos dois sem
+     contradição do outro — isso é esperado e aceito por união, sem releitura).
+   - Classifica, ordena por severidade e atribui os IDs finais.
+
+4. **O consolidador escreve os arquivos** `.md` (categorias + `00_INDICE.md`) —
+   único ponto do processo que escreve o contrato de saída oficial. Os
+   revisores do passo 2 nunca escrevem nesses arquivos.
+
+5. **Reportar ao usuário**: caminho da pasta de revisão, contagem de itens por
+   severidade, as 3–5 fragilidades mais graves, e os caminhos dos 2 arquivos de
+   rascunho dos revisores (para inspeção, caso o autor queira comparar o que
+   cada revisor encontrou antes da consolidação). Nada foi editado no `.tex`.
+
+   **TODO (rodada futura):** depois que este fluxo de 2 revisores +
+   consolidador estiver validado em uso real por um tempo, remover a menção aos
+   caminhos de rascunho deste passo — voltar a reportar só pasta + contagem +
+   fragilidades, como antes desta mudança.
 
 ## Checklist de revisão
 
