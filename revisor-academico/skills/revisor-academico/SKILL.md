@@ -156,12 +156,47 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 ## Checklist de revisão
 
 **LaTeX / estrutura**
-- Refs cruzadas: `\ref` vs `\label`, rótulos definidos e usados, labels duplicados,
-  rótulos com acento/não-ASCII (frágeis).
-- Listas automáticas: `\listoffigures`/`\listoftables` duplicadas ou desviadas de função.
-- Floats: consistência de especificadores (`[h]`, `[H]`, `[htbp]`), pacotes correspondentes.
-- Figuras: mesma imagem reutilizada em figuras distintas; arquivos de imagem ausentes.
-- Bibliografia: existência de seção de Referências; citações `\cite` sem entrada.
+
+**Referências cruzadas e rótulos**
+- `\ref` vs `\label` trocados; rótulos definidos e nunca referenciados (órfãos)
+  — vale para figuras, tabelas, equações e seções, não só figuras; labels
+  duplicados; rótulos com acento/caracteres não-ASCII (frágeis).
+- Float ou equação referenciado no texto antes de aparecer no documento (ordem
+  de leitura invertida).
+- Apêndices/anexos com prefixo de numeração (A.1, B.2) citado incorretamente
+  ou nunca referenciado.
+
+**Listas automáticas**
+- `\listoffigures`/`\listoftables` duplicadas ou desviadas de função.
+
+**Floats: consistência e legendas**
+- Especificadores de posição (`[h]`, `[H]`, `[htbp]`) inconsistentes; pacote
+  correspondente (`float`) ausente quando `[H]` é usado. **Sinalizar todo uso
+  de `[H]` como ponto de atenção** — força a posição exata do float e pode
+  afetar fortemente o layout do PDF final, mesmo quando usado corretamente.
+- Mesma imagem reutilizada em figuras distintas; arquivo de imagem ausente ou
+  caminho quebrado.
+- Tabela sem `\caption`/`\label`, ou com legenda vazia/genérica ("Tabela 1").
+- Tabela extensa (muitas linhas) usando `tabular` em vez de `longtable` —
+  candidata a estourar a página.
+- Estilo de tabela inconsistente: `\hline` manual e `booktabs`
+  (`\toprule`/`\midrule`) misturados no mesmo documento.
+
+**Bibliografia e citações**
+- Existência de seção de Referências; citações `\cite` sem entrada
+  correspondente.
+- DOI ausente em referências quando outras entradas do mesmo tipo já têm.
+- Citação direta com mais de 3 linhas sem recuo/formatação de bloco (ABNT).
+
+**Hyperref e links**
+- `\url`/`\href` com sintaxe malformada, ou link em texto cru sem comando.
+- Cor/estilo de link inadequado ao padrão do documento (ex.: cores vivas num
+  documento que o padrão indica ser impresso em P&B).
+
+**Idioma e configuração técnica**
+- Pacote de idioma (`babel`/`polyglossia`) configurado para idioma diferente
+  do texto real do documento — afeta hifenização e nomes automáticos
+  ("Capítulo"/"Chapter", "Figura"/"Figure").
 
 **Gramática e ortografia** — acentuação, crase, concordância, regência, pontuação, digitação.
 
