@@ -161,10 +161,13 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - `\ref` vs `\label` trocados; rótulos definidos e nunca referenciados (órfãos)
   — vale para figuras, tabelas, equações e seções, não só figuras; labels
   duplicados; rótulos com acento/caracteres não-ASCII (frágeis).
-- Float ou equação referenciado no texto antes de aparecer no documento (ordem
-  de leitura invertida).
-- Apêndices/anexos com prefixo de numeração (A.1, B.2) citado incorretamente
-  ou nunca referenciado.
+- Float ou equação referenciado no texto antes de aparecer na fonte (ordem
+  inversa no código-fonte) — para floats isso é um proxy aproximado, já que a
+  posição renderizada no PDF pode diferir da posição no `.tex`.
+- Apêndices/anexos citados no texto mas nunca referenciados; prefixo de
+  numeração (A.1, B.2) mencionado no texto que não corresponde a nenhum
+  apêndice definido no documento (checagem exata da numeração compilada fica
+  fora do escopo de leitura estática).
 
 **Listas automáticas**
 - `\listoffigures`/`\listoftables` duplicadas ou desviadas de função.
@@ -186,7 +189,9 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - Existência de seção de Referências; citações `\cite` sem entrada
   correspondente.
 - DOI ausente em referências quando outras entradas do mesmo tipo já têm.
-- Citação direta com mais de 3 linhas sem recuo/formatação de bloco (ABNT).
+- Citação direta extensa (candidata a >3 linhas renderizadas em ABNT) sem
+  recuo/formatação de bloco — linhas no código-fonte são só um indício
+  aproximado, a checagem definitiva depende da renderização.
 
 **Hyperref e links**
 - `\url`/`\href` com sintaxe malformada, ou link em texto cru sem comando.
