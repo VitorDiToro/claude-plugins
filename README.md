@@ -13,6 +13,7 @@ Personal plugin marketplace for [Claude Code](https://code.claude.com).
 |-----------------|---------|--------------------------------------------------------------------|---------|
 | `commit-helper` | 1.1.1   | Generates Conventional Commits messages from your staged changes.  | [docs/commit-helper.md](docs/commit-helper.md) |
 | `desrobotizar`  | 2.0.1   | Removes AI-writing tells from Brazilian Portuguese text (40 patterns). | [docs/desrobotizar.md](docs/desrobotizar.md) *(pt-BR)* |
+| `revisor-academico` | 1.0.0 | Editorial review of academic LaTeX reports (non-strict ABNT), reported as Markdown. | [docs/revisor-academico.md](docs/revisor-academico.md) *(pt-BR)* |
 
 ### Installation
 
@@ -20,6 +21,7 @@ Personal plugin marketplace for [Claude Code](https://code.claude.com).
 /plugin marketplace add VitorDiToro/claude-plugins
 /plugin install commit-helper@vitor-plugins
 /plugin install desrobotizar@vitor-plugins
+/plugin install revisor-academico@vitor-plugins
 ```
 
 ### Updating
@@ -53,6 +55,7 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 |-----------------|--------|------------------------------------------------------------------------|----------|
 | `commit-helper` | 1.1.1  | Gera mensagens no padrão Conventional Commits a partir do seu stage.   | [docs/commit-helper.md](docs/commit-helper.md) |
 | `desrobotizar`  | 2.0.1  | Remove sinais de escrita gerada por IA em textos em pt-BR (40 padrões). | [docs/desrobotizar.md](docs/desrobotizar.md) |
+| `revisor-academico` | 1.0.0 | Revisão editorial de relatórios acadêmicos em LaTeX (ABNT não estrita), entregue em Markdown. | [docs/revisor-academico.md](docs/revisor-academico.md) |
 
 ### Instalação
 
@@ -60,6 +63,7 @@ Marketplace pessoal de plugins do [Claude Code](https://code.claude.com).
 /plugin marketplace add VitorDiToro/claude-plugins
 /plugin install commit-helper@vitor-plugins
 /plugin install desrobotizar@vitor-plugins
+/plugin install revisor-academico@vitor-plugins
 ```
 
 ### Atualizar
