@@ -150,6 +150,11 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 
 ## Processo
 
+> **Pré-requisito:** os passos 2 e 3 despacham subagentes. Isso só funciona
+> numa sessão que tenha acesso a uma ferramenta de despacho de subagentes —
+> não funciona se a skill for invocada a partir de um subagente que não tenha
+> essa ferramenta disponível.
+
 1. **Mapear o documento** (uma única vez, antes do passo 2). Encontre o arquivo
    principal (`\documentclass`) e siga todos os `\input`/`\include`. Resolva a
    lista final de arquivos incluídos — essa lista é compartilhada pelos dois
@@ -160,6 +165,10 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    arquivos do passo 1 e o checklist completo abaixo:
    - **Revisor 1** — modelo `sonnet`, effort `xhigh`.
    - **Revisor 2** — modelo `opus`, effort `xhigh`.
+   - (Esta e a instrução de effort do consolidador no passo 3 são intenção de
+     design: se a ferramenta de despacho disponível não expuser um parâmetro
+     de effort, transmita isso como instrução explícita no prompt do
+     subagente em vez de assumir que existe um parâmetro para isso.)
    - Cada revisor detecta o padrão do documento e revisa por todo o checklist,
      de forma independente (nenhum sabe da existência do outro).
    - Cada revisor escreve seus achados **brutos** — mesmo template de item da

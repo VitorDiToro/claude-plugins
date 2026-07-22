@@ -15,6 +15,9 @@ Pedir "revise este texto" costuma devolver uma resposta corrida no chat. Esta sk
 uma **saída estruturada, localizada e navegável**, e — deliberadamente — **não corrige** o
 documento: quem decide o que acatar é você.
 
+- a revisão é composta por **duas revisões independentes, consolidadas num
+  único resultado** — reduz a chance de um problema real passar despercebido,
+  mas não é garantia de cobertura completa;
 - uma pasta `revisao/` com um índice e um arquivo por categoria de problema;
 - cada apontamento com **localização exata** (`arquivo:linha`), problema e sugestão;
 - itens ordenados por **severidade** e com **ID único** para referência;
@@ -30,12 +33,14 @@ Revise este relatório em LaTeX.
 
 A skill vai:
 
-1. Localizar o arquivo principal (`\documentclass`) e seguir todos os `\input`/`\include`.
-2. Detectar o padrão que o próprio documento adota — a ABNT é aplicada de forma **não
-   estrita**, avaliando a consistência interna em vez de impor uma regra rígida.
-3. Revisar por eixo (LaTeX, gramática, terminologia, estrutura, conteúdo técnico, referências).
-4. Escrever a pasta `revisao/` com os apontamentos.
-5. Reportar o caminho, a contagem por severidade e as fragilidades mais graves.
+1. Localizar o arquivo principal (`\documentclass`) e seguir todos os `\input`/`\include`,
+   resolvendo a lista de arquivos uma única vez.
+2. Despachar **2 revisores independentes, em paralelo** — cada um detecta o padrão que o
+   próprio documento adota (a ABNT é aplicada de forma **não estrita**, avaliando
+   consistência interna) e revisa por todo o checklist, sem saber da existência do outro.
+3. Despachar um **consolidador** que une os achados dos dois revisores, resolve
+   divergências de severidade e escreve a pasta `revisao/` final.
+4. Reportar o caminho, a contagem por severidade e as fragilidades mais graves.
 
 ## Formato da saída
 
