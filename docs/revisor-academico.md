@@ -130,15 +130,16 @@ A frase não exibirá o número da seção e cria um rótulo duplicado ("multipl
   não-ASCII, listas automáticas (`\listoffigures`/`\listoftables`), floats, figuras que
   reutilizam a mesma imagem, arquivos de imagem ausentes, bibliografia.
 - **Gramática e ortografia** — acentuação, crase, concordância, regência, pontuação,
-  repetição excessiva de palavras/expressões (vício de linguagem).
+  repetição excessiva de palavras/expressões (vício de linguagem), prolixidade,
+  homônimos/parônimos confundidos pelo contexto.
 - **Terminologia** — grafias divergentes do mesmo termo, acrônimos expandidos e listados.
 - **Estrutura e rigor acadêmico** — tom impessoal, superlativos e "marketing" sem
-  evidência, coloquialismos, redundância, seções que antecipam a conclusão, elementos
-  ABNT esperados.
+  evidência, coloquialismos, redundância, seções que antecipam a conclusão, seções
+  desproporcionais, elementos ABNT esperados.
 - **Conteúdo técnico** — precisão das afirmações, alegações absolutas indevidas, ausência
   de resultados quantitativos, citações a fontes (NIST, RFC, OWASP) sem referência.
 - **Referências e citações** — citações `\cite` sem entrada correspondente, DOI ausente,
-  conformidade ABNT de referências.
+  campos essenciais ausentes (autor/título/ano/editora), conformidade ABNT de referências.
 - **Conformidade com requisitos externos** (opcional) — cobertura de entregáveis exigidos
   por um enunciado/rubric fornecido, critérios de avaliação não atendidos; só se aplica
   quando você fornece esse material na hora do pedido (ver "Conformidade com um enunciado

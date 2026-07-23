@@ -4,6 +4,16 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.5.0 - 2026-07-23
+
+### Added
+- 4 new checklist items, spanning existing categories (no new output file/prefix): a
+  "Referência bibliográfica sem campo essencial" bullet under "Bibliografia e citações" (`R`);
+  a "seção/capítulo desproporcional" bullet under "Organização e fluxo" (`E`), backed by a new
+  "Tamanho por arquivo" (raw word count) section in `scripts/perfil-padrao.sh`; and two new
+  "Gramática e ortografia" (`G`) subsections, "Prolixidade e frases excessivamente longas" and
+  "Homônimos e parônimos confundidos pelo contexto" — both reviewer judgment, no script.
+
 ## 1.4.0 - 2026-07-22
 
 ### Added

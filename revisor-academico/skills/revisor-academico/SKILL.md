@@ -15,8 +15,8 @@ allowed-tools:
   - Bash
   - Agent
 metadata:
-  version: 1.4.0
-  updated: 2026-07-22
+  version: 1.5.0
+  updated: 2026-07-23
 ---
 
 # Revisão de relatório acadêmico em LaTeX (ABNT)
