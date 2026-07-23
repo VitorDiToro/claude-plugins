@@ -18,6 +18,13 @@ documento: quem decide o que acatar é você.
 - a revisão é composta por **duas revisões independentes, consolidadas num
   único resultado** — reduz a chance de um problema real passar despercebido,
   mas não é garantia de cobertura completa;
+- os dois revisores compartilham um **perfil de padrão do documento** (estilo
+  de citação, especificadores de float, convenção de rótulos, etc.), extraído
+  uma única vez, para não divergirem sobre qual é a convenção interna do
+  documento;
+- opcionalmente, verifica **conformidade com um enunciado, rubric ou norma
+  externa**, se você fornecer um na hora do pedido (ver "Conformidade com um
+  enunciado ou rubric" abaixo);
 - uma pasta `revisao/` com um índice e um arquivo por categoria de problema;
 - cada apontamento com **localização exata** (`arquivo:linha`), problema e sugestão;
 - itens ordenados por **severidade** e com **ID único** para referência;
@@ -34,13 +41,35 @@ Revise este relatório em LaTeX.
 A skill vai:
 
 1. Localizar o arquivo principal (`\documentclass`) e seguir todos os `\input`/`\include`,
-   resolvendo a lista de arquivos uma única vez.
-2. Despachar **2 revisores independentes, em paralelo** — cada um detecta o padrão que o
-   próprio documento adota (a ABNT é aplicada de forma **não estrita**, avaliando
-   consistência interna) e revisa por todo o checklist, sem saber da existência do outro.
+   resolvendo a lista de arquivos uma única vez, e calcular o perfil de padrão do documento.
+2. Despachar **2 revisores independentes, em paralelo** — cada um usa o perfil de padrão
+   compartilhado para os fatos objetivos, detecta de forma independente os aspectos que
+   exigem leitura semântica (tom, domínio técnico, rigor argumentativo), e revisa por todo
+   o checklist, sem saber da existência do outro.
 3. Despachar um **consolidador** que une os achados dos dois revisores, resolve
    divergências de severidade e escreve a pasta `revisao/` final.
 4. Reportar o caminho, a contagem por severidade e as fragilidades mais graves.
+
+### Conformidade com um enunciado ou rubric
+
+Se você tiver um enunciado de atividade, rubric de avaliação ou norma específica do seu
+curso/instituição, cole o texto (ou aponte para o arquivo) **na mesma mensagem** em que pedir
+a revisão:
+
+```
+Revise este relatório em LaTeX. O enunciado da atividade exige: (1) cobertura das
+quatro aplicações integradas (LiDAR, coleira, armadilha, controlador de cargas);
+(2) Resumo e Abstract; (3) resultados quantitativos de todas as métricas de rede
+testadas em cada aplicação.
+```
+
+Nesse caso, a skill extrai uma lista de requisitos do texto fornecido (uma única vez,
+compartilhada pelos 2 revisores e pelo consolidador) e passa a gerar também
+`07_conformidade_requisitos.md`, com os requisitos não atendidos. Requisitos externos têm
+prioridade sobre o padrão interno do documento — se o enunciado pede algo que o documento não
+faz, isso é um apontamento real, mesmo que o documento seja consistente consigo mesmo sobre
+não fazer aquilo. Sem enunciado/rubric mencionado, o comportamento é o mesmo de sempre — este
+recurso é inteiramente opcional.
 
 ## Formato da saída
 
@@ -53,7 +82,8 @@ seu-projeto/
     ├── 03_terminologia_consistencia.md    # grafia de termos, acrônimos
     ├── 04_estrutura_conteudo_academico.md # tom, superlativos, rigor, estrutura
     ├── 05_conteudo_tecnico_<assunto>.md   # precisão técnica e argumentação
-    └── 06_referencias_citacoes.md         # citações e bibliografia (ABNT)
+    ├── 06_referencias_citacoes.md         # citações e bibliografia (ABNT)
+    └── 07_conformidade_requisitos.md      # (opcional) conformidade com enunciado/rubric fornecido
 ```
 
 ### Severidade
@@ -77,6 +107,7 @@ você referenciar facilmente ao decidir o que corrigir.
 | Estrutura e conteúdo acadêmico    | `E`     |
 | Conteúdo técnico                  | `TC`    |
 | Referências e citações            | `R`     |
+| Conformidade com requisitos externos (opcional) | `REQ` |
 
 ### Exemplo de apontamento
 
@@ -105,6 +136,12 @@ A frase não exibirá o número da seção e cria um rótulo duplicado ("multipl
   ABNT esperados.
 - **Conteúdo técnico** — precisão das afirmações, alegações absolutas indevidas, ausência
   de resultados quantitativos, citações a fontes (NIST, RFC, OWASP) sem referência.
+- **Referências e citações** — citações `\cite` sem entrada correspondente, DOI ausente,
+  conformidade ABNT de referências.
+- **Conformidade com requisitos externos** (opcional) — cobertura de entregáveis exigidos
+  por um enunciado/rubric fornecido, critérios de avaliação não atendidos; só se aplica
+  quando você fornece esse material na hora do pedido (ver "Conformidade com um enunciado
+  ou rubric" acima).
 
 ## Por que "ABNT não estrita"
 
