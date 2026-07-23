@@ -167,8 +167,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    um **perfil de padrão do documento**: fatos objetivos (especificadores de
    float, mecanismo de siglas, estilo de citação/bibliografia, convenção de
    prefixo de rótulo, estilo de tabela, configuração de idioma, estilo de
-   aspas) extraídos por varredura estrutural barata, **sem** leitura semântica
-   do conteúdo.
+   aspas, tamanho por arquivo) extraídos por varredura estrutural barata,
+   **sem** leitura semântica do conteúdo.
 
    Este perfil é compartilhado pelos dois revisores do passo 2 e pelo
    consolidador do passo 3 — nenhum dos três precisa (nem deve) redescobrir
@@ -295,6 +295,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - Citação direta extensa (candidata a >3 linhas renderizadas em ABNT) sem
   recuo/formatação de bloco — linhas no código-fonte são só um indício
   aproximado, a checagem definitiva depende da renderização.
+- Referência bibliográfica sem campo essencial (autor, título, ano, editora/veículo) para
+  o tipo de fonte (livro, artigo, site, etc.).
 
 **Hyperref e links**
 - `\url`/`\href` com sintaxe malformada, ou link em texto cru sem comando.
@@ -349,6 +351,16 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   é um achado) — julgamento do revisor, não do script.
 - Sinalizar quando o padrão se repete de forma notável ao longo do documento, não uma ou
   duas ocorrências isoladas.
+
+**Prolixidade e frases excessivamente longas**
+- Frases com excesso de orações subordinadas ou "rodeios" que prejudicam a clareza —
+  sinalizar quando o padrão se repete ao longo do texto, não uma frase isolada pontualmente
+  longa.
+
+**Homônimos e parônimos confundidos pelo contexto**
+- Palavra correta ortograficamente mas errada pelo sentido da frase (ex.: "mas" no lugar de
+  "mais", "se não" no lugar de "senão", e pares semelhantes) — diferente de erro de
+  ortografia (a palavra existe e está bem escrita, só é a palavra errada para o contexto).
 
 ### Terminologia e consistência
 
@@ -412,6 +424,11 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   seções/capítulos.
 - Objetivos declarados na introdução que não são todos retomados na
   conclusão.
+- Seção ou capítulo com extensão muito desproporcional em relação aos demais (ex.: um
+  capítulo com uma fração do tamanho dos outros, sem justificativa aparente no conteúdo) —
+  usa a contagem de palavras por arquivo do perfil de padrão como indício; é contagem bruta,
+  não conteúdo líquido, então julgamento do revisor decide se a disparidade é real ou só um
+  artefato de um arquivo com mais figuras/tabelas/marcação.
 
 **Elementos ABNT esperados**
 - Resumo/abstract, palavras-chave, sumário, lista de abreviaturas —
