@@ -71,6 +71,7 @@ Categorias e prefixos de ID (use as que se aplicarem; crie outras se necessário
 | `04_estrutura_conteudo_academico.md`       | Estrutura, redundância, tom, rigor, ABNT          | `E`        |
 | `05_conteudo_tecnico_<assunto>.md`         | Precisão técnica e argumentação (ex.: segurança)  | `TC`       |
 | `06_referencias_citacoes.md`               | Citações, bibliografia, conformidade ABNT de refs | `R`        |
+| `07_conformidade_requisitos.md`            | Conformidade com enunciado/rubric/norma externa (só existe se um requisito externo foi fornecido) | `REQ` |
 
 Cada arquivo só existe se houver ao menos um item para ele. Não crie arquivos vazios.
 
@@ -176,8 +177,21 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    argumentativo) **não** entram nesse perfil — continuam sendo julgamento
    independente de cada revisor, onde a redundância dos dois ainda tem valor.
 
+   **Se o pedido do usuário mencionar ou apontar para um enunciado, rubric ou
+   norma externa** (texto colado no próprio pedido, ou um arquivo referenciado),
+   extraia dele uma **lista estruturada de requisitos** — isso é leitura
+   semântica (não é varredura barata como o perfil de padrão), mas é feita
+   **uma única vez**, evitando que cada revisor releia e interprete o
+   enunciado de forma diferente. Essa lista também é compartilhada pelos dois
+   revisores e pelo consolidador, mas **julgar se o documento atende cada
+   requisito continua sendo trabalho independente de cada revisor** — é
+   julgamento, não fato objetivo, e é onde a redundância dos dois ainda tem
+   valor. Sem nenhum enunciado/rubric mencionado, pule esta extração
+   inteiramente — o comportamento permanece idêntico ao de hoje.
+
 2. **Despachar 2 revisores independentes, em paralelo**, cada um com a lista de
-   arquivos, o perfil de padrão do passo 1, e o checklist completo abaixo:
+   arquivos, o perfil de padrão, a lista de requisitos externos (se houver) do
+   passo 1, e o checklist completo abaixo:
    - **Revisor 1** — modelo `sonnet`, effort `xhigh`.
    - **Revisor 2** — modelo `opus`, effort `xhigh`.
    - (Esta e a instrução de effort do consolidador no passo 3 são intenção de
@@ -197,8 +211,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      resposta, só um resumo curto e o caminho desse arquivo.
 
 3. **Despachar o consolidador** — modelo `opus`, effort `max` — com os 2
-   arquivos de rascunho, a lista de arquivos e o perfil de padrão do passo 1.
-   O consolidador:
+   arquivos de rascunho, a lista de arquivos, o perfil de padrão e a lista de
+   requisitos externos (se houver) do passo 1. O consolidador:
    - Faz a **união** dos achados dos dois revisores (não interseção) — todo
      achado real de qualquer um dos dois entra no resultado final.
    - Casa achados equivalentes pelo **local** (`arquivo:linha`/trecho citado
@@ -399,6 +413,30 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   relatado nos resultados.
 - Limitações do estudo evidentes mas não mencionadas.
 
+### Conformidade com requisitos externos
+
+> Esta seção **só se aplica** quando o usuário forneceu um enunciado, rubric
+> ou norma externa na chamada da skill (texto colado ou arquivo referenciado).
+> Sem isso, pule esta seção inteiramente — não crie o arquivo
+> `07_conformidade_requisitos.md`.
+
+**Cobertura de entregáveis exigidos**
+- Aplicação, seção ou entregável explicitamente exigido pelo enunciado mas
+  ausente do relatório.
+- Elemento estrutural exigido por norma (ex.: Abstract em inglês, seção de
+  limitações) mas ausente, mesmo que o documento seja internamente coerente
+  sem ele.
+
+**Critérios de rubric não atendidos**
+- Critério de avaliação explícito (ex.: "comparação com pelo menos 2 trabalhos
+  relacionados") sem evidência de que foi atendido no texto.
+
+**Prioridade sobre o padrão interno**
+- Quando o requisito externo conflita com o padrão que o documento já segue de
+  forma coerente (ex.: enunciado pede citação IEEE, documento usa ABNT em
+  tudo), **o requisito externo prevalece** — sinalizar como não conformidade,
+  não como violação de um padrão interno legítimo.
+
 ## Erros comuns a evitar
 
 - Entregar a revisão **inline no chat** em vez de nos arquivos `.md`. ERRADO — a
@@ -406,7 +444,10 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - **Aplicar/oferecer aplicar** correções nos `.tex`. ERRADO — só apontamentos.
 - Misturar severidades fora de ordem dentro de um arquivo.
 - Itens sem `arquivo:linha` real ou sem ID único.
-- Impor regra ABNT rígida contra um padrão interno coerente do documento.
+- Impor regra ABNT rígida contra um padrão interno coerente do documento
+  (esta regra não se aplica a requisitos externos explicitamente fornecidos
+  pelo usuário — ver "Conformidade com requisitos externos", onde o requisito
+  externo prevalece sobre o padrão interno).
 - **Sub-relatar por complacência** — não deixar de sinalizar um problema
   real por "não querer ser chato". Em caso de dúvida entre reportar ou
   não, reporte: falso negativo é pior que falso positivo — o autor decide
