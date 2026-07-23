@@ -4,6 +4,22 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.3.0 - 2026-07-22
+
+### Added
+- Optional "Conformidade com requisitos externos" checklist category (prefix `REQ`, file
+  `07_conformidade_requisitos.md`): when the user provides an external assignment brief, rubric,
+  or norm in the invocation itself (pasted text or a referenced file), the skill extracts a
+  structured requirement list once (step 1) and shares it with both reviewers and the
+  consolidator — same "compute once, share" pattern as the file list and pattern profile. Judging
+  whether the document satisfies each requirement remains independent per-reviewer work.
+- With no external requirement provided, behavior is unchanged from 1.2.1 — this is purely
+  additive.
+
+### Changed
+- External requirements now explicitly take priority over the "don't impose rigid rules against
+  the document's own coherent internal pattern" guardrail when the two conflict.
+
 ## 1.2.1 - 2026-07-22
 
 ### Added
