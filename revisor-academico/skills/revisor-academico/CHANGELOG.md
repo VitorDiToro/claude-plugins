@@ -4,6 +4,18 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.4.0 - 2026-07-22
+
+### Added
+- "Repetição excessiva de palavras ou expressões (vício de linguagem)" checklist item under
+  "Gramática e ortografia": a new standalone script, `scripts/frequencia-lexical.sh`, computes
+  word-frequency and 2-4-word expression-frequency counts (with a subsumption filter that drops
+  a shorter n-gram when a longer one fully and exactly explains all of its occurrences) via
+  cheap structural scanning, no semantic reading. Its output is shared with both reviewers and
+  the consolidator the same way as the existing pattern profile — computed once in step 1.
+  Judging whether a high-frequency word/expression is a language vice (vs. a legitimate,
+  recurring domain term) remains independent per-reviewer work.
+
 ## 1.3.0 - 2026-07-22
 
 ### Added

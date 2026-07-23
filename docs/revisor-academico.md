@@ -129,7 +129,8 @@ A frase não exibirá o número da seção e cria um rótulo duplicado ("multipl
 - **LaTeX / estrutura** — referências cruzadas (`\ref`/`\label`), rótulos duplicados ou
   não-ASCII, listas automáticas (`\listoffigures`/`\listoftables`), floats, figuras que
   reutilizam a mesma imagem, arquivos de imagem ausentes, bibliografia.
-- **Gramática e ortografia** — acentuação, crase, concordância, regência, pontuação.
+- **Gramática e ortografia** — acentuação, crase, concordância, regência, pontuação,
+  repetição excessiva de palavras/expressões (vício de linguagem).
 - **Terminologia** — grafias divergentes do mesmo termo, acrônimos expandidos e listados.
 - **Estrutura e rigor acadêmico** — tom impessoal, superlativos e "marketing" sem
   evidência, coloquialismos, redundância, seções que antecipam a conclusão, elementos
