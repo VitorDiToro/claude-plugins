@@ -177,6 +177,15 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    argumentativo) **não** entram nesse perfil — continuam sendo julgamento
    independente de cada revisor, onde a redundância dos dois ainda tem valor.
 
+   Execute também `scripts/frequencia-lexical.sh <diretório-do-projeto>` para obter as
+   **contagens de frequência lexical** do documento (palavras mais frequentes e expressões
+   de 2 a 4 palavras mais frequentes, já livres de subconjuntos redundantes) — mesma leitura
+   estrutural barata, sem leitura semântica de conteúdo. A saída é somada ao mesmo perfil de
+   padrão compartilhado com os dois revisores do passo 2 e o consolidador do passo 3. Decidir
+   se uma contagem alta é vício de linguagem (conectivo, verbo de ligação, frase de transição
+   usada em excesso) ou repetição legítima de termo de domínio continua sendo julgamento
+   independente de cada revisor — o script só entrega contagens, sem classificar.
+
    **Se o pedido do usuário mencionar ou apontar para um enunciado, rubric ou
    norma externa** (texto colado no próprio pedido, ou um arquivo referenciado),
    extraia dele uma **lista estruturada de requisitos** — isso é leitura
@@ -330,6 +339,16 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   (ex.: "os testes foram realizados concentraram-se").
 - Palavras corrompidas/fundidas incorretamente (ex.: "deo enlace" em vez de "do
   enlace").
+
+**Repetição excessiva de palavras ou expressões (vício de linguagem)**
+- Usa as contagens de frequência lexical (`frequencia-lexical.sh`) para identificar
+  candidatos a repetição excessiva.
+- Distingue vício de linguagem (conectivos, verbos de ligação, frases de transição usados
+  em excesso — ex.: "portanto", "cabe destacar que", "no que tange a") de repetição
+  legítima de termo de domínio (o assunto do próprio texto, que naturalmente recorre e não
+  é um achado) — julgamento do revisor, não do script.
+- Sinalizar quando o padrão se repete de forma notável ao longo do documento, não uma ou
+  duas ocorrências isoladas.
 
 ### Terminologia e consistência
 
