@@ -55,7 +55,7 @@ END {
   for (g in cnt3) if (allstop(g)) delete cnt3[g]
   for (g in cnt4) if (allstop(g)) delete cnt4[g]
 
-  # Filtro de subsuncao: bigramas contra trigramas (contagens originais)
+  # Filtro de subsunção: bigramas contra trigramas (contagens originais)
   for (g2 in cnt2) {
     subsumed = 0
     for (g3 in cnt3) {
@@ -64,7 +64,7 @@ END {
     if (subsumed) delete cnt2[g2]
   }
 
-  # Filtro de subsuncao: trigramas contra quadrigramas (contagens originais)
+  # Filtro de subsunção: trigramas contra quadrigramas (contagens originais)
   for (g3 in cnt3) {
     subsumed = 0
     for (g4 in cnt4) {
@@ -79,7 +79,7 @@ END {
   topn(m, 30)
   print ""
 
-  print "### Expressoes mais frequentes (2 a 4 palavras, top 20)"
+  print "### Expressões mais frequentes (2 a 4 palavras, top 20)"
   m = 0
   for (g in cnt2) { m++; key[m] = g; val[m] = cnt2[g] }
   for (g in cnt3) { m++; key[m] = g; val[m] = cnt3[g] }
