@@ -223,6 +223,14 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      revisores fazem afirmações **incompatíveis** sobre o mesmo fato/local
      (não conta como contestado um achado relatado por só um dos dois sem
      contradição do outro — isso é esperado e aceito por união, sem releitura).
+   - **Para achados de "Conformidade com requisitos externos"**: um requisito
+     julgado satisfeito por um revisor não gera achado (silêncio) — então isso
+     nunca conta como contestado, mesmo que o outro revisor marque o mesmo
+     requisito como não atendido; trate como união normal, sem releitura.
+     Além disso, achados de ausência (ex.: "nenhum Abstract em nenhum
+     arquivo") muitas vezes não têm um `arquivo:linha` único para casar pelo
+     local — case-os pela **identidade do requisito** (a qual item da lista
+     de requisitos cada achado se refere), não pelo local.
    - Classifica, ordena por severidade e atribui os IDs finais.
 
 4. **O consolidador escreve os arquivos** `.md` (categorias + `00_INDICE.md`) —
@@ -436,6 +444,13 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   forma coerente (ex.: enunciado pede citação IEEE, documento usa ABNT em
   tudo), **o requisito externo prevalece** — sinalizar como não conformidade,
   não como violação de um padrão interno legítimo.
+
+**Se todos os requisitos fornecidos forem atendidos**
+- Não crie o arquivo `07_conformidade_requisitos.md` (mesma regra de não
+  criar arquivos vazios). Uma nota breve confirmando quais requisitos foram
+  checados e atendidos pode abrir o arquivo **apenas quando ele já existe**
+  por haver ao menos um requisito não atendido — essa nota não é um item
+  formal (sem ID, sem severidade); só requisitos não atendidos viram itens.
 
 ## Erros comuns a evitar
 
