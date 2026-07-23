@@ -93,12 +93,21 @@ function allstop(g,   parts, i, k) {
   return 1
 }
 
-function isprefix(big, small) {
-  return (substr(big, 1, length(small)) == small)
+function isprefix(big, small,   nb, ns, ab, as, i) {
+  nb = split(big, ab, " ")
+  ns = split(small, as, " ")
+  if (nb != ns + 1) return 0
+  for (i = 1; i <= ns; i++) if (ab[i] != as[i]) return 0
+  return 1
 }
 
-function issuffix(big, small) {
-  return (substr(big, length(big) - length(small) + 1, length(small)) == small)
+function issuffix(big, small,   nb, ns, ab, as, i, off) {
+  nb = split(big, ab, " ")
+  ns = split(small, as, " ")
+  if (nb != ns + 1) return 0
+  off = nb - ns
+  for (i = 1; i <= ns; i++) if (ab[i + off] != as[i]) return 0
+  return 1
 }
 
 function topn(m, n,   i, j, tmpk, tmpv) {
