@@ -54,3 +54,7 @@ echo -n "Retas (\"): "
 grep -roh '"' "$D" --include="*.tex" 2>/dev/null | wc -l
 echo -n "Tipográficas (\`\` ou ''): "
 grep -rohE "\`\`|''" "$D" --include="*.tex" 2>/dev/null | wc -l
+echo
+
+echo "### Tamanho por arquivo (contagem bruta de palavras)"
+find "$D" -name "*.tex" -exec wc -w {} \; 2>/dev/null | sort -rn
