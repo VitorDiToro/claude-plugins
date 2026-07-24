@@ -161,6 +161,11 @@ def main(directory):
 
 
 if __name__ == "__main__":
+    # Pin stdout to UTF-8, symmetric with the UTF-8 read side. A piped stdout on
+    # Windows defaults to the ANSI codepage (cp1252) and would crash with
+    # UnicodeEncodeError on document characters outside it (echoed source lines
+    # may contain any character). Python 3.7+, stdlib only.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     if len(sys.argv) != 2:
         sys.stderr.write("Uso: python3 pattern_profile.py <diretório-do-projeto-latex>\n")
         sys.exit(2)
