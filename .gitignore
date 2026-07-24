@@ -3,3 +3,7 @@ handoff-*.md
 
 # Specs/planos de trabalho do superpowers — artefatos de sessão, não publicar
 docs/superpowers/*
+
+# Artefatos de bytecode Python (scripts da camada de sinais) — nunca commitar
+__pycache__/
+*.pyc
