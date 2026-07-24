@@ -15,8 +15,8 @@ allowed-tools:
   - Bash
   - Agent
 metadata:
-  version: 1.5.0
-  updated: 2026-07-23
+  version: 1.6.0
+  updated: 2026-07-24
 ---
 
 # Revisão de relatório acadêmico em LaTeX (ABNT)
@@ -155,6 +155,11 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 > numa sessão que tenha acesso a uma ferramenta de despacho de subagentes —
 > não funciona se a skill for invocada a partir de um subagente que não tenha
 > essa ferramenta disponível.
+>
+> **Pré-requisito adicional:** o passo 1 roda dois scripts Python 3 (apenas
+> biblioteca padrão, sem `pip install`). É preciso ter `python3` disponível (no
+> Windows pode ser `python` ou `py -3`). Sem Python 3, reporte isso ao usuário —
+> os sinais objetivos do passo 1 dependem dele.
 
 1. **Mapear o documento e calcular o perfil de padrão** (uma única vez, antes
    do passo 2). Encontre o arquivo principal (`\documentclass`) e siga todos
@@ -163,7 +168,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    resolver isso de novo, por risco de incluir por engano um arquivo de
    rascunho não referenciado em `main.tex`).
 
-   Execute também `scripts/perfil-padrao.sh <diretório-do-projeto>` para obter
+   Execute também `python3 scripts/pattern_profile.py <diretório-do-projeto>` (no
+   Windows, `python` ou `py -3` se `python3` não existir) para obter
    um **perfil de padrão do documento**: fatos objetivos (especificadores de
    float, mecanismo de siglas, estilo de citação/bibliografia, convenção de
    prefixo de rótulo, estilo de tabela, configuração de idioma, estilo de
@@ -177,14 +183,15 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    argumentativo) **não** entram nesse perfil — continuam sendo julgamento
    independente de cada revisor, onde a redundância dos dois ainda tem valor.
 
-   Execute também `scripts/frequencia-lexical.sh <diretório-do-projeto>` para obter as
-   **contagens de frequência lexical** do documento (palavras mais frequentes e expressões
-   de 2 a 4 palavras mais frequentes, já livres de subconjuntos redundantes) — mesma leitura
-   estrutural barata, sem leitura semântica de conteúdo. A saída é somada ao mesmo perfil de
-   padrão compartilhado com os dois revisores do passo 2 e o consolidador do passo 3. Decidir
-   se uma contagem alta é vício de linguagem (conectivo, verbo de ligação, frase de transição
-   usada em excesso) ou repetição legítima de termo de domínio continua sendo julgamento
-   independente de cada revisor — o script só entrega contagens, sem classificar.
+   Execute também `python3 scripts/text_analysis.py <diretório-do-projeto>` para obter a
+   **análise textual** do documento: palavras mais frequentes, expressões de 2 a 4 palavras
+   (já livres de subconjuntos redundantes), **frases repetidas ou quase-repetidas**
+   (boilerplate, com todos os locais) e **frases mais longas** (indício de prolixidade) —
+   mesma leitura estrutural barata, sem leitura semântica de conteúdo. A saída é somada ao
+   mesmo perfil de padrão compartilhado com os dois revisores do passo 2 e o consolidador do
+   passo 3. Decidir se uma contagem/repetição alta é vício de linguagem ou repetição legítima
+   de termo de domínio, e se uma frase longa é prolixidade real, continua sendo julgamento
+   independente de cada revisor — o script só entrega sinais, sem classificar.
 
    **Se o pedido do usuário mencionar ou apontar para um enunciado, rubric ou
    norma externa** (texto colado no próprio pedido, ou um arquivo referenciado),
@@ -343,8 +350,9 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   enlace").
 
 **Repetição excessiva de palavras ou expressões (vício de linguagem)**
-- Usa as contagens de frequência lexical (`frequencia-lexical.sh`) para identificar
-  candidatos a repetição excessiva.
+- Usa as contagens de frequência lexical e a seção de frases repetidas/quase-repetidas
+  (`text_analysis.py`) para identificar candidatos a repetição excessiva — tanto palavra/
+  expressão sobre-usada quanto trecho/frase reaproveitada verbatim (boilerplate).
 - Distingue vício de linguagem (conectivos, verbos de ligação, frases de transição usados
   em excesso — ex.: "portanto", "cabe destacar que", "no que tange a") de repetição
   legítima de termo de domínio (o assunto do próprio texto, que naturalmente recorre e não
@@ -356,6 +364,9 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - Frases com excesso de orações subordinadas ou "rodeios" que prejudicam a clareza —
   sinalizar quando o padrão se repete ao longo do texto, não uma frase isolada pontualmente
   longa.
+- Usa a seção de frases mais longas (`text_analysis.py`) como indício objetivo de candidatas;
+  a divisão de frase é aproximada, então o julgamento do revisor decide se a frase longa é
+  realmente prolixa ou só densa por natureza técnica.
 
 **Homônimos e parônimos confundidos pelo contexto**
 - Palavra correta ortograficamente mas errada pelo sentido da frase (ex.: "mas" no lugar de
@@ -421,7 +432,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 
 **Organização e fluxo**
 - Redundância de conteúdo entre seções; lacunas ou saltos na numeração de
-  seções/capítulos.
+  seções/capítulos — usa a seção de frases repetidas/quase-repetidas do `text_analysis.py`
+  como indício de trechos reaproveitados verbatim entre seções.
 - Objetivos declarados na introdução que não são todos retomados na
   conclusão.
 - Seção ou capítulo com extensão muito desproporcional em relação aos demais (ex.: um
