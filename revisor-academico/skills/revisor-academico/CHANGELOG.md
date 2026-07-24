@@ -4,6 +4,27 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.6.0 - 2026-07-24
+
+### Added
+- Sinal de **frases repetidas ou quase-repetidas** (boilerplate) e de **frases mais longas**
+  (indício de prolixidade) na camada de sinais objetivos, ancorados a `arquivo:linha`. O item de
+  "vício de linguagem" passa a ter respaldo de script real (não só frequência de palavra), o item de
+  "prolixidade" ganha um sinal de apoio, e o item de "redundância entre seções" referencia o sinal
+  de boilerplate.
+
+### Changed
+- Camada de sinais objetivos reescrita de bash para **Python 3 (apenas biblioteca padrão, sem
+  dependências)**, sobre um módulo de corpus compartilhado (`latex_corpus.py`): `perfil-padrao.sh` →
+  `pattern_profile.py` (paridade de saída verificada) e `frequencia-lexical.sh` → `text_analysis.py`.
+  Motivação dupla: consertar o travamento (abaixo) e a **portabilidade para Windows** (os scripts
+  `.sh` não rodam no Windows sem Git Bash/WSL; `python3` roda nos dois). Requer `python3` no ambiente.
+
+### Fixed
+- `frequencia-lexical.sh` travava em documentos de tamanho real (filtro de subsunção O(n²) sobre
+  dezenas de milhares de n-gramas; não terminava em 90s). A versão Python aplica a subsunção só entre
+  os candidatos do top-N e conclui em segundos.
+
 ## 1.5.0 - 2026-07-23
 
 ### Added
