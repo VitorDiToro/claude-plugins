@@ -166,8 +166,8 @@ Você pode apontar isso diretamente no pedido ("revise seguindo o padrão Inatel
 pela NBR 10719"), ou deixar a skill reconhecer automaticamente por sinais estruturais do
 próprio documento. Quando um padrão é reconhecido, divergências dele viram apontamentos
 normais (severidade 🔴/🟠/🟡) — exceto quando o próprio arquivo de referência do padrão já
-rotula aquela divergência como "Severidade: AVISO" (ex.: um especificador de float
-diferente de `[h]` no guia do Inatel), caso em que ela vira `AV` em vez de erro; quando
+rotula aquela divergência como "Severidade: AVISO" (ex.: convenção de nomenclatura de
+chaves BibTeX não seguida, no guia do Inatel), caso em que ela vira `AV` em vez de erro; quando
 nenhuma fonte normativa trata de um aspecto mas o documento é consistente nele, isso vira
 um **Aviso** (`AV`), não um erro — é registrado para você conferir, não para corrigir às
 cegas.

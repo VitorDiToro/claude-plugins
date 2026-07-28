@@ -304,8 +304,9 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 3. **Despachar o consolidador** — modelo `opus`, effort `max` — com os 2
    arquivos de rascunho, a lista de arquivos, o perfil de padrão, a
    classificação de padrão normativo e os arquivos `references/*.md`
-   aplicáveis (se houver), e a lista de requisitos externos (se houver) do
-   passo 1. O consolidador:
+   aplicáveis (se houver, com **caminhos absolutos** — o consolidador também
+   é um subagente e não compartilha o diretório de trabalho da skill), e a
+   lista de requisitos externos (se houver) do passo 1. O consolidador:
    - Faz a **união** dos achados dos dois revisores (não interseção) — todo
      achado real de qualquer um dos dois entra no resultado final.
    - Casa achados equivalentes pelo **local** (`arquivo:linha`/trecho citado
