@@ -77,6 +77,7 @@ Categorias e prefixos de ID (use as que se aplicarem; crie outras se necessário
 | `05_conteudo_tecnico_<assunto>.md`         | Precisão técnica e argumentação (ex.: segurança)  | `TC`       |
 | `06_referencias_citacoes.md`               | Citações, bibliografia, conformidade ABNT de refs | `R`        |
 | `07_conformidade_requisitos.md`            | Conformidade com enunciado/rubric/norma externa (só existe se um requisito externo foi fornecido) | `REQ` |
+| `08_avisos.md`                             | Divergências de padrão sem fonte normativa que as resolva, ou pontos sinalizados por incerteza do revisor — não são erros | `AV` |
 
 Cada arquivo só existe se houver ao menos um item para ele. Não crie arquivos vazios.
 
@@ -85,6 +86,13 @@ Cada arquivo só existe se houver ao menos um item para ele. Não crie arquivos 
 - 🔴 **Crítico** — erro que quebra a compilação, a numeração ou a coerência do documento.
 - 🟠 **Importante** — afeta a qualidade acadêmica, a precisão técnica ou a consistência.
 - 🟡 **Menor** — refinamento, estilo, padronização.
+
+Além da severidade, existe uma categoria à parte — `⚠️ Aviso` (arquivo `08_avisos.md`,
+prefixo `AV`) — para itens que não são necessariamente erros: uma divergência de padrão
+sem nenhuma fonte normativa que a resolva, ou um ponto que o revisor sinaliza por
+incerteza, para conferência humana. Itens `AV` não competem com 🔴/🟠/🟡 — são um eixo
+diferente (incerteza, não gravidade) — e são ordenados por localização no documento, não
+por severidade.
 
 ## Formato de cada item
 
@@ -130,6 +138,9 @@ Cada arquivo agrupa apontamentos por tema. Os itens estão marcados por severida
 - 🟠 **Importante** — afeta qualidade acadêmica, precisão técnica ou consistência.
 - 🟡 **Menor** — refinamento, estilo, padronização.
 
+`⚠️ Aviso` (arquivo `08_avisos.md`) é uma categoria à parte, não uma severidade: marca
+algo que não é necessariamente um erro — confira se está correto.
+
 ## Arquivos desta revisão
 
 | Arquivo | Tema | Severidades |
@@ -146,6 +157,8 @@ Cada arquivo agrupa apontamentos por tema. Os itens estão marcados por severida
 **Principais fragilidades a tratar**
 1. 🔴 <fragilidade mais grave, com referência ao ID> 
 2. 🟠 <...>
+
+**Avisos para conferência:** <N> (ver `08_avisos.md`)
 
 ---
 
