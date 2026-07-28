@@ -349,6 +349,12 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   correspondente (`float`) ausente quando `[H]` é usado. **Sinalizar todo uso
   de `[H]` como ponto de atenção** — força a posição exata do float e pode
   afetar fortemente o layout do PDF final, mesmo quando usado corretamente.
+  Esta é a regra de fallback quando nenhum padrão normativo é reconhecido; com um
+  padrão reconhecido, use a escada de precedência específica dele (ver
+  "Conformidade com padrão normativo reconhecido" em `### Estrutura e rigor acadêmico`).
+- Posição da legenda de figura/tabela (acima/abaixo) — quando um padrão normativo é
+  reconhecido, siga a convenção que ele determina; sem padrão reconhecido, siga o
+  padrão interno já adotado pelo próprio documento, como de costume.
 - Mesma imagem reutilizada em figuras distintas; arquivo de imagem ausente ou
   caminho quebrado.
 - Tabela sem `\caption`/`\label`, ou com legenda vazia/genérica ("Tabela 1").
@@ -365,7 +371,9 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   recuo/formatação de bloco — linhas no código-fonte são só um indício
   aproximado, a checagem definitiva depende da renderização.
 - Referência bibliográfica sem campo essencial (autor, título, ano, editora/veículo) para
-  o tipo de fonte (livro, artigo, site, etc.).
+  o tipo de fonte (livro, artigo, site, etc.) — regra de fallback quando nenhum padrão
+  normativo é reconhecido; com um padrão reconhecido, use as regras de formatação de
+  referências do arquivo `references/padrao-*.md` aplicável.
 
 **Hyperref e links**
 - `\url`/`\href` com sintaxe malformada, ou link em texto cru sem comando.
@@ -504,9 +512,19 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
   não conteúdo líquido, então julgamento do revisor decide se a disparidade é real ou só um
   artefato de um arquivo com mais figuras/tabelas/marcação.
 
-**Elementos ABNT esperados**
-- Resumo/abstract, palavras-chave, sumário, lista de abreviaturas —
-  presentes conforme o padrão que o próprio documento já adota.
+**Conformidade com padrão normativo reconhecido**
+- Quando um padrão institucional é identificado (seleção explícita do usuário, ou
+  calibração automática no Passo 1 do `## Processo`), aplique a hierarquia de
+  `references/guia-mestre.md` e o(s) arquivo(s) `references/padrao-*.md` aplicável(is)
+  para os aspectos estruturais/normativos: elementos pré-textuais/textuais/pós-textuais
+  esperados e sua ordem, convenções específicas do padrão (ex.: Histórico de
+  Atualizações do Inatel, distinção apêndice/anexo).
+- O mapeamento entre o que o arquivo de referência chama de erro/aviso e a
+  classificação final (severidade 🔴/🟠/🟡 ou categoria `AV`) segue exatamente o
+  mecanismo já descrito no `## Processo`, passo 2 — não repetir julgamento aqui.
+- **Quando nenhum padrão é reconhecido**, este item não se aplica — os aspectos
+  estruturais continuam cobertos pelos bullets já existentes neste checklist (floats,
+  bibliografia, etc.), julgando pela consistência interna do documento, como sempre.
 
 ### Conteúdo técnico
 
