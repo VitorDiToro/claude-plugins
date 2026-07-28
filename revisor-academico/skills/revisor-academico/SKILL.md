@@ -240,7 +240,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    §2.
 
 2. **Despachar 2 revisores independentes, em paralelo**, cada um com a lista de
-   arquivos, o perfil de padrão, a lista de requisitos externos (se houver) do
+   arquivos, o perfil de padrão, a classificação de padrão normativo e os arquivos
+   `references/*.md` aplicáveis, a lista de requisitos externos (se houver) do
    passo 1, e o checklist completo abaixo:
    - **Revisor 1** — modelo `sonnet`, effort `xhigh`.
    - **Revisor 2** — modelo `opus`, effort `xhigh`.
@@ -254,6 +255,17 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      de estrangeirismos, domínio técnico, rigor argumentativo); revisa por todo
      o checklist, de forma independente do outro revisor (nenhum sabe da
      existência do outro).
+   - **Mapeamento erro vs. Warning** (quando algum padrão normativo foi reconhecido no
+     passo 1): onde `references/guia-mestre.md` ou o arquivo `references/padrao-*.md`
+     aplicável já rotula explicitamente "Severidade: ERRO" ou "Severidade: AVISO", siga
+     esse rótulo — erro → escolher 🔴/🟠/🟡 pelo impacto, usando as definições da seção
+     `## Severidade`; aviso → categoria `AV` (Warning). Onde não há rótulo explícito,
+     aplique o algoritmo de `references/guia-mestre.md` §3: contradiz uma fonte de nível
+     1-5, ou inconsistência interna → erro (severidade pelo impacto); nenhuma fonte trata
+     do aspecto mas o documento é consistente (nível 6) → `AV`. **Independente desse
+     mecanismo**, cada revisor também pode sinalizar como `AV` qualquer outro ponto em
+     que não tenha confiança total para classificar como erro — julgamento próprio,
+     à parte do algoritmo.
    - Cada revisor escreve seus achados **brutos** — mesmo template de item da
      seção `## Formato de cada item`, mas **sem ID** (o ID final só é atribuído
      na consolidação) — num arquivo de rascunho criado com `mktemp -d`, fora do
@@ -269,6 +281,9 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      sobreposto) e confirma se descrevem o mesmo problema.
    - Quando os dois revisores relatam o **mesmo achado com severidades
      diferentes**, usa a **mais alta** das duas.
+   - Quando os dois revisores relatam o **mesmo achado**, um como erro (qualquer
+     severidade 🔴/🟠/🟡) e o outro como `AV` (Warning), **prevalece o erro** — é a
+     classificação mais específica/assertiva das duas.
    - Relê o `.tex` fonte **apenas** quando um achado é **contestado** — os dois
      revisores fazem afirmações **incompatíveis** sobre o mesmo fato/local
      (não conta como contestado um achado relatado por só um dos dois sem
