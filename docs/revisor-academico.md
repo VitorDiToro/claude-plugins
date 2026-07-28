@@ -42,9 +42,12 @@ Revise este relatório em LaTeX.
 A skill vai:
 
 1. Localizar o arquivo principal (`\documentclass`) e seguir todos os `\input`/`\include`,
-   resolvendo a lista de arquivos uma única vez, e calcular o perfil de padrão do documento.
+   resolvendo a lista de arquivos uma única vez, e calcular o perfil de padrão do documento,
+   incluindo identificar o padrão normativo aplicável (seleção explícita do usuário ou
+   calibração automática).
 2. Despachar **2 revisores independentes, em paralelo** — cada um usa o perfil de padrão
-   compartilhado para os fatos objetivos, detecta de forma independente os aspectos que
+   compartilhado para os fatos objetivos, recebe os arquivos de referência aplicáveis
+   quando um padrão normativo foi reconhecido, detecta de forma independente os aspectos que
    exigem leitura semântica (tom, domínio técnico, rigor argumentativo), e revisa por todo
    o checklist, sem saber da existência do outro.
 3. Despachar um **consolidador** que une os achados dos dois revisores, resolve
@@ -83,14 +86,16 @@ seu-projeto/
     ├── 03_terminologia_consistencia.md    # grafia de termos, acrônimos
     ├── 04_estrutura_conteudo_academico.md # tom, superlativos, rigor, estrutura
     ├── 05_conteudo_tecnico_<assunto>.md   # precisão técnica e argumentação
-    ├── 06_referencias_citacoes.md         # citações e bibliografia (ABNT)
+    ├── 06_referencias_citacoes.md         # citações e bibliografia (conformidade de referências)
     ├── 07_conformidade_requisitos.md      # (opcional) conformidade com enunciado/rubric fornecido
     └── 08_avisos.md                       # divergências sem norma que as resolva, ou incerteza do revisor
 ```
 
 ### Severidade
 
-Os itens de cada arquivo são ordenados do mais crítico ao menor:
+Os itens de cada arquivo são ordenados do mais crítico ao menor (exceto os itens `AV`,
+que são ordenados por localização no documento, não por severidade — não competem na
+mesma escala):
 
 - 🔴 **Crítico** — quebra a compilação, a numeração ou a coerência do documento.
 - 🟠 **Importante** — afeta a qualidade acadêmica, a precisão técnica ou a consistência.
@@ -160,9 +165,12 @@ segue um padrão nomeado — hoje, o template do Inatel ou a NBR 10719 (2015/PUC
 Você pode apontar isso diretamente no pedido ("revise seguindo o padrão Inatel", "revise
 pela NBR 10719"), ou deixar a skill reconhecer automaticamente por sinais estruturais do
 próprio documento. Quando um padrão é reconhecido, divergências dele viram apontamentos
-normais (severidade 🔴/🟠/🟡); quando nenhuma fonte normativa trata de um aspecto mas o
-documento é consistente nele, isso vira um **Aviso** (`AV`), não um erro — é registrado
-para você conferir, não para corrigir às cegas.
+normais (severidade 🔴/🟠/🟡) — exceto quando o próprio arquivo de referência do padrão já
+rotula aquela divergência como "Severidade: AVISO" (ex.: um especificador de float
+diferente de `[h]` no guia do Inatel), caso em que ela vira `AV` em vez de erro; quando
+nenhuma fonte normativa trata de um aspecto mas o documento é consistente nele, isso vira
+um **Aviso** (`AV`), não um erro — é registrado para você conferir, não para corrigir às
+cegas.
 
 **Quando nenhum padrão é reconhecido** — documento não bate nem com Inatel nem com NBR
 10719/PUC — a skill cai no comportamento clássico: detecta o padrão que o **próprio

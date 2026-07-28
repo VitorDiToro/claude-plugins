@@ -74,9 +74,9 @@ Categorias e prefixos de ID (use as que se aplicarem; crie outras se necessário
 | `01_correcoes_latex.md`                    | Bugs de LaTeX: refs, labels, listas, floats, imagens | `C`     |
 | `02_gramatica_ortografia.md`               | Gramática, ortografia, crase, concordância, digitação | `G`    |
 | `03_terminologia_consistencia.md`          | Terminologia, acrônimos, padronização de grafia   | `T`        |
-| `04_estrutura_conteudo_academico.md`       | Estrutura, redundância, tom, rigor, ABNT          | `E`        |
+| `04_estrutura_conteudo_academico.md`       | Estrutura, redundância, tom, rigor, conformidade normativa | `E`        |
 | `05_conteudo_tecnico_<assunto>.md`         | Precisão técnica e argumentação (ex.: segurança)  | `TC`       |
-| `06_referencias_citacoes.md`               | Citações, bibliografia, conformidade ABNT de refs | `R`        |
+| `06_referencias_citacoes.md`               | Citações, bibliografia, conformidade de referências | `R`        |
 | `07_conformidade_requisitos.md`            | Conformidade com enunciado/rubric/norma externa (só existe se um requisito externo foi fornecido) | `REQ` |
 | `08_avisos.md`                             | Divergências de padrão sem fonte normativa que as resolva, ou pontos sinalizados por incerteza do revisor — não são erros | `AV` |
 
@@ -98,8 +98,9 @@ por severidade.
 ## Formato de cada item
 
 Cada item tem um **ID único** = prefixo da categoria + número indexador no arquivo
-(`C1`, `C2`, `G1`, `E6`…). Estrutura obrigatória: severidade, título, **Local**,
-**Trecho** (quando houver), **Problema**, **Sugestão**.
+(`C1`, `C2`, `G1`, `E6`, `AV1`…). Estrutura obrigatória: severidade (ou `⚠️` para
+itens `AV` — ver `## Severidade`), título, **Local**, **Trecho** (quando houver),
+**Problema**, **Sugestão**.
 
 ```markdown
 ## 🔴 C1. `\label` usado no lugar de `\ref` na Introdução
@@ -147,6 +148,7 @@ algo que não é necessariamente um erro — confira se está correto.
 | Arquivo | Tema | Severidades |
 |---|---|---|
 | [01_correcoes_latex.md](01_correcoes_latex.md) | Bugs de LaTeX | 🔴🟡 |
+| [08_avisos.md](08_avisos.md) | Avisos (não são erros) | ⚠️ |
 | ... | ... | ... |
 
 ## Resumo executivo
@@ -263,12 +265,22 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      design: se a ferramenta de despacho disponível não expuser um parâmetro
      de effort, transmita isso como instrução explícita no prompt do
      subagente em vez de assumir que existe um parâmetro para isso.)
+   - Passe os caminhos **absolutos** de `references/guia-mestre.md` e do(s)
+     `references/padrao-*.md` aplicável(is) — um subagente revisor não
+     compartilha o diretório de trabalho da skill, então um caminho relativo
+     não resolve.
    - Cada revisor usa o perfil de padrão compartilhado para os fatos objetivos
      (floats, siglas, citação, rótulos, tabelas, idioma, aspas) e detecta de
      forma independente os aspectos que exigem leitura semântica (tom, itálico
      de estrangeirismos, domínio técnico, rigor argumentativo); revisa por todo
      o checklist, de forma independente do outro revisor (nenhum sabe da
      existência do outro).
+   - **Os arquivos `references/*.md` são insumo normativo, não contrato de
+     saída**: use deles apenas a hierarquia, o algoritmo de decisão e os
+     rótulos de severidade/aviso — ignore qualquer instrução de formato de
+     saída que contenham (ex.: os arquivos `errors.md`/`warnings.md` e o bloco
+     "Padrão inferido" descritos em `references/guia-mestre.md` §7). O único
+     contrato de saída desta skill é o de `## O que a saída É (contrato)`.
    - **Mapeamento erro vs. Warning** (quando algum padrão normativo foi reconhecido no
      passo 1): onde `references/guia-mestre.md` ou o arquivo `references/padrao-*.md`
      aplicável já rotula explicitamente "Severidade: ERRO" ou "Severidade: AVISO", siga
@@ -276,10 +288,13 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      `## Severidade`; aviso → categoria `AV` (Warning). Onde não há rótulo explícito,
      aplique o algoritmo de `references/guia-mestre.md` §3: contradiz uma fonte de nível
      1-5, ou inconsistência interna → erro (severidade pelo impacto); nenhuma fonte trata
-     do aspecto mas o documento é consistente (nível 6) → `AV`. **Independente desse
-     mecanismo**, cada revisor também pode sinalizar como `AV` qualquer outro ponto em
-     que não tenha confiança total para classificar como erro — julgamento próprio,
-     à parte do algoritmo.
+     do aspecto mas o documento é consistente (nível 6) → `AV`. Este mecanismo só se
+     aplica quando um padrão foi reconhecido — sem padrão reconhecido, ele não gera
+     nenhum item `AV`.
+   - **Julgamento independente de Warning** (sempre disponível, com ou sem padrão
+     normativo reconhecido): cada revisor também pode sinalizar como `AV` qualquer outro
+     ponto em que não tenha confiança total para classificar como erro — julgamento
+     próprio, à parte do algoritmo acima.
    - Cada revisor escreve seus achados **brutos** — mesmo template de item da
      seção `## Formato de cada item`, mas **sem ID** (o ID final só é atribuído
      na consolidação) — num arquivo de rascunho criado com `mktemp -d`, fora do
@@ -287,8 +302,10 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
      resposta, só um resumo curto e o caminho desse arquivo.
 
 3. **Despachar o consolidador** — modelo `opus`, effort `max` — com os 2
-   arquivos de rascunho, a lista de arquivos, o perfil de padrão e a lista de
-   requisitos externos (se houver) do passo 1. O consolidador:
+   arquivos de rascunho, a lista de arquivos, o perfil de padrão, a
+   classificação de padrão normativo e os arquivos `references/*.md`
+   aplicáveis (se houver), e a lista de requisitos externos (se houver) do
+   passo 1. O consolidador:
    - Faz a **união** dos achados dos dois revisores (não interseção) — todo
      achado real de qualquer um dos dois entra no resultado final.
    - Casa achados equivalentes pelo **local** (`arquivo:linha`/trecho citado
@@ -591,7 +608,10 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
 - Impor regra ABNT rígida contra um padrão interno coerente do documento
   (esta regra não se aplica a requisitos externos explicitamente fornecidos
   pelo usuário — ver "Conformidade com requisitos externos", onde o requisito
-  externo prevalece sobre o padrão interno).
+  externo prevalece sobre o padrão interno — nem a um padrão normativo
+  reconhecido no Passo 1 do `## Processo`, cujos níveis 1-5 da hierarquia de
+  `references/guia-mestre.md` prevalecem sobre o padrão interno nos aspectos
+  que tratarem).
 - **Sub-relatar por complacência** — não deixar de sinalizar um problema
   real por "não querer ser chato". Em caso de dúvida entre reportar ou
   não, reporte: falso negativo é pior que falso positivo — o autor decide
