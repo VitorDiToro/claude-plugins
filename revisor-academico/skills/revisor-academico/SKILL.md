@@ -36,10 +36,15 @@ capturado por nenhuma das duas revisões.
 **Postura editorial:**
 - Não assuma que o texto está correto. Procure ativamente problemas de lógica,
   argumentos fracos, afirmações sem evidência e trechos confusos.
-- A norma é a **ABNT de forma não estrita**: muitos modelos são baseados na ABNT
-  com pequenas diferenças. **Detecte o padrão seguido ao longo do próprio
-  documento** e avalie a consistência com esse padrão — não imponha uma regra
-  rígida contra o que o documento já adota de forma coerente.
+- **Padrões estruturais/normativos têm uma hierarquia de fontes.** Antes de julgar pelo
+  padrão interno do documento, tente reconhecer se ele segue um padrão nomeado — ver
+  `references/guia-mestre.md` para a hierarquia completa e o algoritmo de decisão. Em
+  resumo: um requisito institucional explícito fornecido pelo usuário (nível 1) tem
+  prioridade máxima; na ausência dele, o padrão específico reconhecido (Inatel ou NBR
+  10719/PUC — nível 2) governa os aspectos que tratar; para os aspectos que nenhuma fonte
+  normativa tratar, ou quando **nenhum padrão é reconhecido**, o comportamento é o de
+  sempre: julgar pela consistência com o **padrão interno do próprio documento**, sem
+  impor regra externa nenhuma.
 - O relatório é feito em LaTeX: **revise também a estrutura e o LaTeX**, não só o texto.
 
 ## A regra inviolável
@@ -173,8 +178,8 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    um **perfil de padrão do documento**: fatos objetivos (especificadores de
    float, mecanismo de siglas, estilo de citação/bibliografia, convenção de
    prefixo de rótulo, estilo de tabela, configuração de idioma, estilo de
-   aspas, tamanho por arquivo) extraídos por varredura estrutural barata,
-   **sem** leitura semântica do conteúdo.
+   aspas, tamanho por arquivo, sinais de padrão institucional) extraídos por
+   varredura estrutural barata, **sem** leitura semântica do conteúdo.
 
    Este perfil é compartilhado pelos dois revisores do passo 2 e pelo
    consolidador do passo 3 — nenhum dos três precisa (nem deve) redescobrir
@@ -182,6 +187,29 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    de voz, itálico de estrangeirismos, domínio do conteúdo técnico, rigor
    argumentativo) **não** entram nesse perfil — continuam sendo julgamento
    independente de cada revisor, onde a redundância dos dois ainda tem valor.
+
+   **Identifique o padrão normativo aplicável** (também uma única vez, compartilhado
+   pelos 2 revisores e pelo consolidador — nenhum dos três deve inferir isso de forma
+   independente, pelo risco de divergirem sobre qual fonte governa um mesmo aspecto):
+   - **Se o pedido do usuário nomear diretamente um padrão conhecido** (ex.: "revise
+     seguindo o padrão Inatel", "revise pela NBR 10719", "revise pela ABNT"), use esse
+     padrão diretamente — `references/padrao-inatel.md` para Inatel; `references/padrao-nbr10719.md`
+     para NBR 10719 ou para "ABNT" genérico (esse arquivo já resolve internamente 2015 vs
+     PUC vs 1989 pela sua própria hierarquia interna). Pule a calibração por sinais
+     abaixo.
+   - **Caso contrário**, use a seção "Sinais de padrão institucional" do
+     `pattern_profile.py` (calculada no mesmo comando acima) junto com
+     `references/guia-mestre.md` §4 (Passagem de calibração) para classificar o
+     documento: `INATEL`, `NBR10719/PUC`, `híbrido` (aplicar por aspecto, não em bloco) ou
+     `nenhum reconhecido`.
+   - Registre essa classificação e o(s) arquivo(s) de `references/padrao-*.md`
+     aplicável(is) — compartilhado com os 2 revisores e o consolidador, junto com
+     `references/guia-mestre.md` (sempre lido, independente da classificação, quando
+     algum padrão for reconhecido).
+   - **Se nenhum padrão for reconhecido**, o comportamento permanece o de sempre: os
+     revisores julgam pela consistência com o padrão interno do documento, sem aplicar a
+     hierarquia normativa — nenhum item da categoria `AV` (Warning) é gerado por este
+     mecanismo para os aspectos estruturais/normativos.
 
    Execute também `python3 scripts/text_analysis.py <diretório-do-projeto>` para obter a
    **análise textual** do documento: palavras mais frequentes, expressões de 2 a 4 palavras
@@ -204,6 +232,12 @@ Obtenha data/hora reais executando `date "+%d/%m/%Y às %H:%M:%S"`.
    julgamento, não fato objetivo, e é onde a redundância dos dois ainda tem
    valor. Sem nenhum enunciado/rubric mencionado, pule esta extração
    inteiramente — o comportamento permanece idêntico ao de hoje.
+
+   Se esse material trouxer regras de formatação/estrutura (não só requisitos de
+   conteúdo/entregáveis), essas regras valem como **nível 1** da hierarquia normativa —
+   acima de Inatel/NBR10719/PUC — para os aspectos que cobrirem, mesmo que o usuário
+   também tenha selecionado um padrão conhecido (ver acima). Ver `references/guia-mestre.md`
+   §2.
 
 2. **Despachar 2 revisores independentes, em paralelo**, cada um com a lista de
    arquivos, o perfil de padrão, a lista de requisitos externos (se houver) do
