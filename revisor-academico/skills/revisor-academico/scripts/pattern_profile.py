@@ -2,7 +2,7 @@
 # pattern_profile.py
 #
 # Port of perfil-padrao.sh -- computes a cheap STRUCTURAL profile of a LaTeX
-# project (no semantic reading), emitting the same 8 Markdown sections with the
+# project (no semantic reading), emitting 9 Markdown sections with the
 # same nature of counts, so nothing downstream changes. Reviewers read this.
 #
 # Regexes are applied line by line over RAW file content (comments NOT stripped),
@@ -29,6 +29,15 @@ HLINE_RE = re.compile(r"\\hline")
 BOOKTABS_RE = re.compile(r"\\toprule|\\midrule|\\bottomrule")
 STRAIGHT_QUOTE_RE = re.compile(r'"')
 TYPO_QUOTE_RE = re.compile(r"``|''")
+HISTORICO_ATUALIZACOES_RE = re.compile(r"Hist[oó]rico de Atualiza[cç][oõ]es", re.IGNORECASE)
+CONCLUSAO_SECTION_RE = re.compile(r"\\(?:section|chapter)\*?\{\s*Conclus[aã]o\s*\}", re.IGNORECASE)
+CONSIDERACOES_FINAIS_RE = re.compile(
+    r"\\(?:section|chapter)\*?\{\s*Considera[cç][oõ]es\s+[Ff]inais\s*\}", re.IGNORECASE
+)
+RESUMO_SECTION_RE = re.compile(r"\\(?:section|chapter)\*?\{\s*Resumo\s*\}", re.IGNORECASE)
+GLOSSARIO_SECTION_RE = re.compile(r"\\(?:section|chapter)\*?\{\s*Gloss[aá]rio\s*\}", re.IGNORECASE)
+FOLHA_ROSTO_RE = re.compile(r"[Ff]olha de [Rr]osto")
+PRINTONLYUSED_RE = re.compile(r"printonlyused")
 
 # --- line-oriented "grep -rn" (whole matching line) patterns ---
 FLOAT_PKG_RE = re.compile(r"usepackage.*float")
@@ -156,6 +165,34 @@ def main(directory):
     # sort -rn: count desc, ties by reversed full-line order.
     sizes.sort(key=lambda s: (s[1], s[0]), reverse=True)
     out.extend(line for line, _w in sizes)
+    out.append("")
+
+    # 9. Institutional pattern calibration signals (INATEL vs NBR10719/PUC).
+    # Raw facts only, same spirit as every section above -- no classification here.
+    out.append("### Sinais de padrão institucional")
+    out.append("Sinais de INATEL:")
+    out.append("Histórico de Atualizações:")
+    hits = _grep_n(files, HISTORICO_ATUALIZACOES_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
+    out.append("Seção \"Conclusão\":")
+    hits = _grep_n(files, CONCLUSAO_SECTION_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
+    out.append("Acrônimos com `printonlyused`:")
+    hits = _grep_n(files, PRINTONLYUSED_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
+    out.append("Sinais de NBR10719/PUC:")
+    out.append("Seção \"Resumo\":")
+    hits = _grep_n(files, RESUMO_SECTION_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
+    out.append("Seção \"Considerações finais\":")
+    hits = _grep_n(files, CONSIDERACOES_FINAIS_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
+    out.append("Seção \"Glossário\":")
+    hits = _grep_n(files, GLOSSARIO_SECTION_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
+    out.append("\"Folha de rosto\":")
+    hits = _grep_n(files, FOLHA_ROSTO_RE)
+    out.extend(hits if hits else ["(não encontrado)"])
 
     print("\n".join(out))
 
