@@ -4,6 +4,35 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 1.7.0 - 2026-07-28
+
+### Added
+- Nova categoria de saída **Warning** (`08_avisos.md`, prefixo `AV`): divergências de
+  padrão sem nenhuma fonte normativa que as resolva, ou pontos que um revisor sinaliza
+  por incerteza — não são erros, ficam à parte da severidade 🔴/🟠/🟡, para conferência
+  humana.
+- Arquivos de referência normativa em `references/` (`guia-mestre.md`,
+  `padrao-nbr10719.md`, `padrao-inatel.md`, renomeados de `modelos_ref/`): hierarquia de
+  precedência de fontes (norma institucional explícita > Inatel > NBR 10719:2015 > PUC
+  Minas > NBR 10719:1989 > padrão interno do documento) e algoritmo de decisão por
+  aspecto, usados para classificar erro (severidade normal) vs. Warning (nível 6 —
+  nenhuma fonte trata do aspecto, documento consistente).
+- Sinais de calibração de padrão institucional (Histórico de Atualizações, Conclusão,
+  Considerações finais, Resumo, Glossário, Folha de rosto, `printonlyused`) em
+  `scripts/pattern_profile.py`, para reconhecer automaticamente se o documento segue
+  Inatel ou NBR 10719/PUC — computado uma única vez, compartilhado pelos 2 revisores e
+  pelo consolidador.
+- Seleção explícita de padrão pelo usuário no próprio pedido ("revise seguindo o padrão
+  Inatel", "revise pela NBR 10719", "revise pela ABNT") — pula a calibração automática.
+
+### Changed
+- A postura "ABNT de forma não estrita" deixa de ser o comportamento padrão único: a
+  skill agora tenta reconhecer um padrão normativo nomeado antes de recorrer ao padrão
+  interno do documento; o padrão interno continua sendo o fallback quando nenhum padrão
+  conhecido é identificado.
+- O bullet "Elementos ABNT esperados" é substituído por uma checagem estrutural mais
+  precisa, dirigida pelos arquivos de `references/`, quando um padrão é reconhecido.
+
 ## 1.6.0 - 2026-07-24
 
 ### Added

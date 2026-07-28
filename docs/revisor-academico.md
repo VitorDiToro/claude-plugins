@@ -1,10 +1,11 @@
 # revisor-academico
 
-Skill que faz **revisão editorial de relatórios acadêmicos em LaTeX** seguindo a **ABNT
-de forma não estrita**. Atua como um editor acadêmico experiente e exigente — revisa
-LaTeX, gramática, terminologia, estrutura, rigor acadêmico e conteúdo técnico — e entrega
-os resultados como uma **lista de apontamentos em Markdown**, **sem alterar** os seus
-arquivos `.tex`.
+Skill que faz **revisão editorial de relatórios acadêmicos em LaTeX**, reconhecendo
+padrões normativos nomeados (Inatel, NBR 10719/PUC) quando aplicável, com **fallback ao
+padrão interno do documento** quando nenhum é reconhecido. Atua como um editor acadêmico
+experiente e exigente — revisa LaTeX, gramática, terminologia, estrutura, rigor
+acadêmico e conteúdo técnico — e entrega os resultados como uma **lista de apontamentos
+em Markdown**, **sem alterar** os seus arquivos `.tex`.
 
 > A instalação fica no [README](../README.md) (`/plugin install revisor-academico@ditoro-plugins`).
 > Este documento é um aprofundamento de **como a skill funciona**.
@@ -83,7 +84,8 @@ seu-projeto/
     ├── 04_estrutura_conteudo_academico.md # tom, superlativos, rigor, estrutura
     ├── 05_conteudo_tecnico_<assunto>.md   # precisão técnica e argumentação
     ├── 06_referencias_citacoes.md         # citações e bibliografia (ABNT)
-    └── 07_conformidade_requisitos.md      # (opcional) conformidade com enunciado/rubric fornecido
+    ├── 07_conformidade_requisitos.md      # (opcional) conformidade com enunciado/rubric fornecido
+    └── 08_avisos.md                       # divergências sem norma que as resolva, ou incerteza do revisor
 ```
 
 ### Severidade
@@ -108,6 +110,7 @@ você referenciar facilmente ao decidir o que corrigir.
 | Conteúdo técnico                  | `TC`    |
 | Referências e citações            | `R`     |
 | Conformidade com requisitos externos (opcional) | `REQ` |
+| Avisos (Warning) — não são erros            | `AV`    |
 
 ### Exemplo de apontamento
 
@@ -135,23 +138,38 @@ A frase não exibirá o número da seção e cria um rótulo duplicado ("multipl
 - **Terminologia** — grafias divergentes do mesmo termo, acrônimos expandidos e listados.
 - **Estrutura e rigor acadêmico** — tom impessoal, superlativos e "marketing" sem
   evidência, coloquialismos, redundância, seções que antecipam a conclusão, seções
-  desproporcionais, elementos ABNT esperados.
+  desproporcionais, conformidade com o padrão normativo reconhecido (Inatel/NBR
+  10719/PUC), quando aplicável.
 - **Conteúdo técnico** — precisão das afirmações, alegações absolutas indevidas, ausência
   de resultados quantitativos, citações a fontes (NIST, RFC, OWASP) sem referência.
 - **Referências e citações** — citações `\cite` sem entrada correspondente, DOI ausente,
-  campos essenciais ausentes (autor/título/ano/editora), conformidade ABNT de referências.
+  campos essenciais ausentes (autor/título/ano/editora), formatação de referências
+  conforme o padrão normativo reconhecido.
 - **Conformidade com requisitos externos** (opcional) — cobertura de entregáveis exigidos
   por um enunciado/rubric fornecido, critérios de avaliação não atendidos; só se aplica
   quando você fornece esse material na hora do pedido (ver "Conformidade com um enunciado
   ou rubric" acima).
+- **Avisos** (`⚠️ AV`, arquivo `08_avisos.md`) — não são erros: divergências de padrão sem
+  nenhuma fonte normativa que as resolva, ou pontos que um revisor sinaliza por incerteza,
+  para você conferir.
 
-## Por que "ABNT não estrita"
+## Padrões normativos e fallback ao padrão do documento
 
-Muitos relatórios seguem modelos baseados na ABNT, mas com pequenas diferenças de
-instituição para instituição. Em vez de cobrar a norma ao pé da letra, a skill **detecta o
-padrão que o próprio documento adota** (numeração, estilo de figuras, formato de citações,
-grafia de estrangeirismos) e aponta **inconsistências com esse padrão** — o que é mais útil
-e evita falso-positivos contra convenções locais legítimas.
+A skill tenta reconhecer, para a parte estrutural/normativa da revisão, se o documento
+segue um padrão nomeado — hoje, o template do Inatel ou a NBR 10719 (2015/PUC Minas/1989).
+Você pode apontar isso diretamente no pedido ("revise seguindo o padrão Inatel", "revise
+pela NBR 10719"), ou deixar a skill reconhecer automaticamente por sinais estruturais do
+próprio documento. Quando um padrão é reconhecido, divergências dele viram apontamentos
+normais (severidade 🔴/🟠/🟡); quando nenhuma fonte normativa trata de um aspecto mas o
+documento é consistente nele, isso vira um **Aviso** (`AV`), não um erro — é registrado
+para você conferir, não para corrigir às cegas.
+
+**Quando nenhum padrão é reconhecido** — documento não bate nem com Inatel nem com NBR
+10719/PUC — a skill cai no comportamento clássico: detecta o padrão que o **próprio
+documento** adota (numeração, estilo de figuras, formato de citações, grafia de
+estrangeirismos) e aponta inconsistências com ele, sem impor nenhuma norma externa. Isso
+evita falso-positivos contra convenções locais legítimas de documentos que não seguem
+nenhum dos padrões nomeados.
 
 ## Nota de desenvolvimento
 

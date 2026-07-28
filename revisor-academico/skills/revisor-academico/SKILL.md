@@ -3,9 +3,10 @@ name: revisor-academico
 description: >-
   Usar quando o usuário pedir para revisar, corrigir ou avaliar um relatório,
   monografia, TCC, artigo ou dissertação acadêmica escrita em LaTeX (arquivos
-  .tex) que segue a ABNT — inclui revisão de LaTeX, gramática, terminologia,
-  estrutura, conteúdo técnico e rigor acadêmico. A revisão é entregue como
-  apontamentos, nunca aplicada ao texto.
+  .tex) que segue a ABNT ou um template institucional como o do Inatel —
+  inclui revisão de LaTeX, gramática, terminologia, estrutura, conteúdo
+  técnico e rigor acadêmico. A revisão é entregue como apontamentos, nunca
+  aplicada ao texto.
 license: MIT
 allowed-tools:
   - Read
@@ -15,8 +16,8 @@ allowed-tools:
   - Bash
   - Agent
 metadata:
-  version: 1.6.0
-  updated: 2026-07-24
+  version: 1.7.0
+  updated: 2026-07-28
 ---
 
 # Revisão de relatório acadêmico em LaTeX (ABNT)
