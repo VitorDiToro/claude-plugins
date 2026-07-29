@@ -212,7 +212,7 @@ dia `find_tex_files` for alterada para honrar o manifesto, o caso 8 falha.
 |---|---|---|
 | `pattern_profile.py` §2 (perfil) | `find_tex_files` (glob-all) | perfil reflete o projeto inteiro; órfão gigante deve aparecer no tamanho-por-arquivo |
 | `pattern_profile.py` §9→§3 (classificação normativa) | `find_tex_files` (glob-all) | não perder marcador institucional (`historico_de_revisoes`) por um `%` de borda |
-| `text_analysis.py` (§4) | **decisão sua** — ver nota | frequência/boilerplate sobre incluído ou inteiro? |
+| `text_analysis.py` (§4) | `find_manifest_files` (**decidido: incluído**) | frequência/boilerplate/prolixidade sobre o corpus incluído (o que sai no PDF) |
 | `iter_sentences` p/ corpus §6 | `find_manifest_files` | corpus revisável = o que sai no PDF |
 | scripts de candidato §5 (`foreign_terms`, `bib_check`, `crossref_check`, ...) | `find_manifest_files` | não gerar candidato sobre rascunho órfão |
 | `build_dossier.py` §1 | **ambas** (para o diff) | a diferença é o sinal de órfãos |
@@ -223,13 +223,12 @@ linha em cada**, deliberada e testável, não uma revalidação por comportament
 Reforça por que a correção da decisão 3 reduz risco: com `find_tex_files` intocada, essa é a
 única mudança nesses dois scripts, e ela é visível no diff.
 
-**Nota sobre `text_analysis.py` (§4) — uma decisão ainda aberta.** Frequência lexical, boilerplate
-e prolixidade: sobre o corpus **incluído** ou o **inteiro**? Argumento para incluído: prolixidade
-de um rascunho órfão não interessa. Argumento para inteiro: boilerplate copiado entre um capítulo
-ativo e um rascunho ainda revela reuso. Inclinação: **incluído** (`find_manifest_files`),
-consistente com "revisar o que sai no PDF" — mas é a única entrada da tabela que não é forçada
-pela lógica dos órfãos, então fica registrada como sua para decidir. Se indeciso, incluído é o
-default seguro.
+**Nota sobre `text_analysis.py` (§4) — DECIDIDO: incluído (manifesto).** Frequência lexical,
+boilerplate e prolixidade rodam sobre o corpus **incluído**, não o inteiro (prolixidade de um
+rascunho órfão não interessa; regra "revisar o que sai no PDF"). O `text_analysis.py` **não muda
+de código** — herda o escopo de `iter_sentences`/`tokenize_words`, que já descobrem via
+`find_manifest_files`. A tarefa correspondente é **revalidação + um teste** confirmando que um
+arquivo órfão não entra em nenhuma das 4 seções — não uma edição de comportamento.
 
 ---
 

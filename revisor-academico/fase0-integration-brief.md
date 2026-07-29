@@ -96,9 +96,9 @@ candidato §5, e eles **não** têm a mesma descoberta:
 
 | Script | Estado | Cobre (candidatos) |
 |---|---|---|
-| `foreign_terms.py` | ✔ feito — só trocar p/ `find_manifest_files` | anglicismos sem `\textit`, com whitelist de marcas/nomes próprios |
+| `foreign_terms.py` | escrito — **conformar** (discovery + `anchor()`) via plano T1 | anglicismos sem `\textit`, com whitelist de marcas/nomes próprios |
 | `crossref_check.py` | **a construir** | `\ref`/`\label` trocados, órfãos, duplicados, com acento; `\cite{chave}` sem entrada no `.bib`; entrada `.bib` nunca citada; apêndice citado e inexistente |
-| `bib_check.py` | ✔ feito — só trocar p/ `find_manifest_files` | campo essencial ausente por tipo; DOI ausente **condicional** (só quando outras entradas do mesmo tipo têm DOI); formato implausível (ano, páginas, URL) |
+| `bib_check.py` | escrito — **conformar** (discovery + `anchor()`) + `\cite`-sem-entrada, via plano T2 | campo essencial ausente por tipo; DOI ausente **condicional** (só quando outras entradas do mesmo tipo têm DOI); formato implausível (ano, páginas, URL); `\cite` sem entrada no `.bib` |
 | `float_check.py` | **a construir** | imagem ausente/caminho quebrado; mesma imagem em figuras distintas; tabela sem `\caption`/`\label`; `tabular` extenso candidato a `longtable`; `\hline`+`booktabs` misturados — com localização |
 | `acronym_check.py` | **a construir** | sigla usada antes da expansão; sigla reexpandida; expansão manual; gênero inconsistente |
 | `lexicon_check.py` | **a construir** | superlativos/coloquialismos; crase em padrões conhecidos (`à cada`); separador decimal inconsistente; grafias divergentes do mesmo termo |
