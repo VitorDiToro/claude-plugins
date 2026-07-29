@@ -135,6 +135,11 @@
 ## Terminologia e consistência
 <!-- passe: 3 (T) -->
 
+> Os blocos com respaldo de script (anglicismos via `foreign_terms.py`; acrônimos via
+> `acronym_check.py`; unidades / separador decimal via `lexicon_check.py`) **adjudicam os
+> candidatos do §5** — não varrem do zero. Em especial, **não varra anglicismos à mão**: isso
+> desperdiça o recall de 100% do `foreign_terms.py`.
+
 **Grafia e padronização de termos**
 - Grafias divergentes do mesmo termo (ex.: front-end/frontend/Backend);
   nomes próprios/produtos grafados de formas diferentes (ex.: "GitHub" vs
