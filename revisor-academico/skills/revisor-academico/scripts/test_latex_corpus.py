@@ -160,5 +160,43 @@ class TestManifest(unittest.TestCase):
                       self._rel(latex_corpus.find_tex_files(self.dir)))
 
 
+class TestResolutionModel(unittest.TestCase):
+    """Resolution is ROOT-relative (standard LaTeX \\input semantics), not
+    parent-file-relative. These lock that model, which the suite lacked."""
+
+    def _mk(self, chap_body):
+        d = tempfile.mkdtemp()
+        _write(os.path.join(d, "main.tex"),
+               "\\documentclass{article}\n\\begin{document}\n"
+               "\\include{sub/chap}\n\\end{document}\n")
+        _write(os.path.join(d, "sub", "chap.tex"), chap_body)
+        return d
+
+    def test_root_relative_include_from_subfolder_resolves(self):
+        # A root-relative path (sub/other) from a file inside sub/ resolves.
+        d = self._mk("\\input{sub/other}\n")
+        try:
+            _write(os.path.join(d, "sub", "other.tex"), "reachable via root-relative path\n")
+            man = latex_corpus.find_manifest_files(d)
+            rel = set(os.path.relpath(p, d).replace("\\", "/") for p in man.files)
+            self.assertIn("sub/other.tex", rel)
+            self.assertEqual(man.unresolved, [])
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_bare_name_in_subfolder_is_unresolved(self):
+        # A bare \\input{util} inside sub/ resolves against ROOT, not the sibling
+        # sub/util.tex -> it goes to `unresolved`, not `files` (correct LaTeX behavior).
+        d = self._mk("\\input{util}\n")
+        try:
+            _write(os.path.join(d, "sub", "util.tex"), "sibling, NOT reachable by bare name\n")
+            man = latex_corpus.find_manifest_files(d)
+            rel = set(os.path.relpath(p, d).replace("\\", "/") for p in man.files)
+            self.assertNotIn("sub/util.tex", rel)
+            self.assertIn("util", man.unresolved)
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()
