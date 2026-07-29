@@ -136,7 +136,9 @@ Regras que este arquivo fixa:
 - Main detectado mesmo com espaço: `\begin {document}`.
 - `find_tex_files` casa `.tex` **case-insensitive** (`.TEX`/`.Tex` — Windows/macOS).
 - Resolução **root-relative** (padrão LaTeX): um nome nu numa subpasta (`\input{util}` dentro de
-  `others/`) vai para `unresolved`, não resolve para o irmão — comportamento correto.
+  `others/`) vai para `unresolved`, não resolve para o irmão — comportamento **correto e
+  pretendido** (é a semântica do `\input`; **não** é limitação a "corrigir" com parent-relative
+  numa versão futura).
 
 O que este `main.tex` **não** tem, e portanto fica fora de escopo (documentado como limite
 conhecido): `\subfile`, `\import`, includes dentro de `\if...\fi`, e macros próprias que
@@ -174,16 +176,16 @@ fixture-manifest/
 
 ## 4. Casos de teste (asserções, não inspeção visual)
 
-> **Nota de fixture:** os números abaixo (12 incluídos / 15 `.tex`) ilustram o `main.tex` real
-> **completo**. A fixture de unit-test **implementada** (`scripts/test_latex_corpus.py`) é um
-> subconjunto reduzido — **8 incluídos + 3 órfãos = 11 `.tex`** — e é a autoritativa. Leia as
-> contagens abaixo como ilustração do padrão, não do fixture implementado.
+> **Nota de fixture:** o `main.tex` real completo tem **12 incluídos + 3 órfãos**; a fixture de
+> unit-test implementada (`scripts/test_latex_corpus.py`) **reduz para 8 incluídos + 3 órfãos =
+> 11 `.tex`**, preservando um exemplar de cada regra. Os casos 1 e 8 abaixo citam os números da
+> **fixture implementada** (autoritativa).
 
-1. **Manifesto correto.** `find_manifest_files(fixture)` retorna exatamente os 12 incluídos:
-   `others/configuration`, `others/capa`, `others/historico_de_revisoes`,
-   `others/lista_de_figuras`, `others/lista_de_tabelas`, `others/acronym`, `others/indice`,
-   `01`–`05` (como caminhos `.tex` resolvidos). **Não** contém `00_avisos`, `folha_de_rosto`,
-   `apendice`.
+1. **Manifesto correto.** `find_manifest_files(fixture)` retorna exatamente os **8 incluídos**:
+   `main`, `others/configuration`, `others/packages`, `others/capa`,
+   `others/historico_de_revisoes`, `others/acronym`, `others/indice`, `01_introducao` (como
+   caminhos `.tex` resolvidos). **Não** contém `00_avisos`, `others/folha_de_rosto`,
+   `others/apendice`.
 2. **Órfãos corretos.** `find_tex_files(fixture) − find_manifest_files(fixture)` = exatamente
    `{00_avisos.tex, others/folha_de_rosto.tex, others/apendice.tex}`.
 3. **Comentário respeitado.** Descomentar `%\include{00_avisos}` no fixture move `00_avisos` do
@@ -196,8 +198,8 @@ fixture-manifest/
 7. **Fallback sem main.** `find_manifest_files` sobre um diretório sem `\documentclass`+
    `\begin{document}` retorna `resolved_ok=False` e `files == find_tex_files(dir)`.
 8. **`find_tex_files` inalterada.** Um teste de regressão confirma que `find_tex_files` ainda
-   retorna **todos** os `.tex` do fixture (15), incluindo os 3 órfãos — prova de que a Task 2
-   não mudou o comportamento da glob-all.
+   retorna **todos** os `.tex` do fixture (**11** = 8 incluídos + 3 órfãos), incluindo os 3
+   órfãos — prova de que a Task 2 não mudou o comportamento da glob-all.
 
 O caso 8 é o que garante, executavelmente, que a correção da decisão 3 foi respeitada: se algum
 dia `find_tex_files` for alterada para honrar o manifesto, o caso 8 falha.
