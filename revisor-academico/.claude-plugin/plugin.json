@@ -1,6 +1,6 @@
 {
   "name": "revisor-academico",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "description": "Revisão editorial de relatórios acadêmicos em LaTeX (ABNT/Inatel, com fallback ao padrão do documento): aponta problemas de LaTeX, gramática, terminologia, estrutura e conteúdo técnico em arquivos Markdown, sem alterar os arquivos-fonte.",
   "author": {
     "name": "Vitor",

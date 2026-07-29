@@ -4,6 +4,57 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
+## 2.0.0 - 2026-07-29
+
+> **⚠️ BREAKING — leia antes de atualizar da v1.7.0.** Dois contratos de execução mudaram:
+>
+> 1. **Execução: paralela → sequencial de modelo fixo.** A revisão deixa de despachar 2
+>    revisores em paralelo (`sonnet` + `opus`) + consolidador e passa a rodar como **uma única
+>    conversa sequencial** dentro do prompt cache, com **modelo e effort fixos: Opus 4.8 ·
+>    xhigh**, do início ao fim. Trocar modelo/effort no meio, `/compact`, ou negar uma tool
+>    invalidam o cache e recomputam a conversa — ver "Invariantes de cache" no `SKILL.md`.
+> 2. **Novo pré-requisito bloqueante: `hunspell` + dicionário `pt_BR`.** Sem eles a Fase 0
+>    **aborta** (no mesmo nível de `python3`, que já era obrigatório). Especialmente no Windows,
+>    instale-os **antes** de revisar — senão a revisão para logo no início.
+>
+> O **contrato de saída é preservado integralmente** (pasta `revisao/`, `00_INDICE.md`, um
+> arquivo por categoria, formato de item, severidades 🔴/🟠/🟡 + `AV`). O que muda é *como* a
+> revisão é produzida, não o formato do resultado.
+
+### Changed
+- **Fluxo reescrito para operar dentro do prompt cache do Claude Code**, sequencial: uma
+  conversa, 7 passes especializados de mandato disjunto + auditoria A cacheada, substituindo os
+  2 revisores paralelos + consolidador. O documento é lido a preço cheio **uma vez** (o dossiê),
+  depois relido a ~10% via cache. **Consolidador removido** — com mandatos disjuntos não há o
+  que unir, casar por local, nem renumerar entre passes.
+- Numeração de ID mista e explícita: arquivos de escritor único (01/02/03/06) numeram com ID
+  final no próprio turno; as categorias de julgamento (04/05, e 07 quando existe) e o transversal
+  `08` recebem candidatos sem ID e são **finalizados uma vez** (ordena → dedup → numera), com
+  dedup em **dois modos** (localização + identidade do requisito/elemento).
+- `SKILL.md` enxugado (~9k → ~3k tokens): checklist e contrato de saída extraídos para
+  `references/` (`checklist-revisao.md` com TAGs de passe-dono; `contrato-saida.md`). O §4
+  (calibração) do `guia-mestre.md` migrou para o `pattern_profile.py` — a classificação normativa
+  agora vem pronta no §3 do dossiê e **não deve ser recalculada** pelo agente.
+
+### Added
+- `latex_corpus.anchor()` / `project_relative()` — contrato executável de ancoragem
+  (`arquivo:linha` 1-based, relativo à raiz, forward slashes), com cobertura de testes
+  (`test_latex_corpus.py`, stdlib `unittest`).
+- `latex_corpus.find_manifest_files()` — descoberta **manifesto-aware** (segue `\documentclass`
+  + `\input`/`\include`, comentários respeitados, recursiva, cycle-safe, com fallback glob-all).
+  Coexiste com `find_tex_files` (glob-all, **inalterada**): a camada de sinais e o corpus passam
+  a ignorar rascunhos `.tex` não referenciados, enquanto o perfil/classificação continuam vendo
+  o projeto inteiro; os arquivos órfãos viram sinal no §1 do dossiê.
+- Fase 0 determinística (camada de scripts + `build_dossier.py`) que monta um dossiê único, com
+  verificação bloqueante de `python3` e `hunspell`/`pt_BR`; ortografia via `hunspell -d pt_BR`.
+- "Invariantes de cache" e "Orçamento de contexto" documentados no `SKILL.md`; medição de cache
+  via `current_usage`.
+
+### Deferred
+- **Auditoria B** (subagente num segundo modelo, auditando só as categorias de julgamento) fica
+  totalmente especificada e **deferida**, com gatilho medido por `current_usage` (folga de quota
+  + buracos visíveis na auditoria A). Ver o spec de design v2.0.
+
 ## 1.7.0 - 2026-07-28
 
 ### Added
