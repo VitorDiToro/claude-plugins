@@ -101,8 +101,13 @@ def find_tex_files(directory):
     out = []
     for root, _dirs, files in os.walk(directory):
         for name in files:
-            if name.endswith(".tex"):
-                out.append(os.path.join(root, name))
+            # Case-insensitive extension so 'Main.TEX'/'chapter.Tex' are not silently
+            # skipped on case-preserving filesystems (Windows/macOS). normpath so the
+            # emitted paths are canonical and match _resolve_include_target's output,
+            # which is what makes the orphan diff (glob-all - manifest) and the manifest
+            # visited-set work for ANY directory argument (e.g. '.', './proj').
+            if name.lower().endswith(".tex"):
+                out.append(os.path.normpath(os.path.join(root, name)))
     out.sort()
     return out
 
@@ -120,14 +125,17 @@ def find_tex_files(directory):
 Manifest = namedtuple("Manifest", ["files", "unresolved", "resolved_ok"])
 
 _INPUT_INCLUDE_RE = re.compile(r"\\(?:input|include)\{([^}]+)\}")
+_DOCUMENTCLASS_RE = re.compile(r"\\documentclass")
+_BEGIN_DOCUMENT_RE = re.compile(r"\\begin\s*\{document\}")
 
 
 def _find_main_file(directory):
     """The .tex containing BOTH \\documentclass and \\begin{document}
-    (uncommented). Path-sorted first such file, or None."""
+    (uncommented). LaTeX allows a space before the group (\\begin {document}),
+    so match with a whitespace-tolerant regex. Path-sorted first such file, or None."""
     for path in find_tex_files(directory):
         text = "".join(strip_comment(ln) for ln in read_text(path).split("\n"))
-        if "\\documentclass" in text and "\\begin{document}" in text:
+        if _DOCUMENTCLASS_RE.search(text) and _BEGIN_DOCUMENT_RE.search(text):
             return path
     return None
 
@@ -157,6 +165,7 @@ def find_manifest_files(directory, main_file=None):
         main_file = _find_main_file(directory)
     if main_file is None:
         return Manifest(find_tex_files(directory), [], False)
+    main_file = os.path.normpath(main_file)  # canonical, matching _resolve_include_target
     files, unresolved, seen = [], [], set()
 
     def visit(path):

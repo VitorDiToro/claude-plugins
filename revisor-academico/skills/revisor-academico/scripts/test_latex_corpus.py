@@ -131,6 +131,34 @@ class TestManifest(unittest.TestCase):
         names = self._rel(s.file for s in latex_corpus.iter_sentences(self.dir))
         self.assertTrue(names.isdisjoint(self.ORPHANS))
 
+    def test_noncanonical_dir_and_cycle_paths_consistent(self):
+        # Regression (finding 3): a non-canonical dir arg + a file that \includes main
+        # back. Without canonical paths on both discovery sides, the orphan diff breaks
+        # (manifest not a subset of glob-all) and main is appended twice.
+        intro = os.path.join(self.dir, "01_introducao.tex")
+        _write(intro, latex_corpus.read_text(intro) + "\n\\include{main}\n")
+        nc = os.path.join(self.dir, ".")  # non-canonical form of the same directory
+        man = latex_corpus.find_manifest_files(nc)
+        allf = set(latex_corpus.find_tex_files(nc))
+        self.assertTrue(set(man.files) <= allf)  # set difference / orphan diff well-defined
+        mains = [p for p in man.files if os.path.basename(p) == "main.tex"]
+        self.assertEqual(len(mains), 1)          # no double-append from format mismatch
+
+    def test_begin_document_with_space_still_detected(self):
+        # Regression (finding 4): \begin {document} (space) must still detect the main.
+        main = os.path.join(self.dir, "main.tex")
+        _write(main, latex_corpus.read_text(main).replace(
+            "\\begin{document}", "\\begin {document}"))
+        man = latex_corpus.find_manifest_files(self.dir)
+        self.assertTrue(man.resolved_ok)
+        self.assertIn("main.tex", self._rel(man.files))
+
+    def test_uppercase_tex_extension_globbed(self):
+        # Regression (finding 5): case-insensitive .tex extension (Windows/macOS).
+        _write(os.path.join(self.dir, "others", "EXTRA.TEX"), "x\n")
+        self.assertIn("others/EXTRA.TEX",
+                      self._rel(latex_corpus.find_tex_files(self.dir)))
+
 
 if __name__ == "__main__":
     unittest.main()
