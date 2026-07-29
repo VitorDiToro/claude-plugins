@@ -97,49 +97,20 @@ O inverso também vale: onde o `INATEL` é silencioso, a `10719-2015` volta a go
 
 ---
 
-## 4. Passagem de calibração
+## 4. Calibração do padrão — migrada para o `pattern_profile.py`
 
-Antes de qualquer verificação, executar uma leitura completa para **identificar o padrão em uso**. Sem esta etapa, o agente não consegue distinguir divergência deliberada de defeito.
+A identificação automática do padrão normativo em uso (antes descrita aqui como uma leitura de
+calibração feita pelo agente) passou a ser **determinística**: o `pattern_profile.py` varre o
+projeto **inteiro** (glob-all) em busca dos sinais estruturais e emite a **classificação
+normativa** — `INATEL` | `NBR10719/PUC` | `híbrido` | `nenhum reconhecido` — no **§3 do dossiê**.
+O agente **consome essa classificação pronta**; não refaz a calibração aqui.
 
-### 4.1 Identificar o padrão de origem
+Rodar sobre o projeto inteiro (não só os arquivos incluídos) é deliberado: um marcador
+institucional forte pode viver num arquivo de borda ou atrás de um `\include` comentado, e a
+classificação não pode perdê-lo.
 
-Sinais de que o documento segue o `INATEL` — no source LaTeX:
-
-- seção de **Histórico de Atualizações**: tabela com as funções `Versão`, `Data`, `Autor(es)`, `Notas`
-- macro de página padrão definida no preâmbulo e invocada no início de cada arquivo de seção
-- bloco de macros de metadados no arquivo principal (título, autor, data, versão do documento)
-- lista de siglas intitulada **Acrônimos**, via pacote `acronym` com `printonlyused`
-- estilo bibliográfico **numérico IEEE**
-- classe `article` com preâmbulo de configuração trazido por `\input`/`\include`
-- **Conclusão** como seção de fechamento
-- ausência de *Resumo na língua vernácula*
-
-Basta um marcador estrutural forte — o Histórico de Atualizações, a macro de página padrão ou o bloco de metadados — para classificar o documento como `INATEL`. **Não usar nomes de arquivo como critério:** a arquitetura varia entre projetos.
-
-Sinais de que segue a `10719-2015` / `PUC`:
-
-- *Resumo na língua vernácula* + palavras-chave nos pré-textuais
-- *Considerações finais* como fechamento
-- *Glossário* nos pós-textuais, após as referências
-- folha de rosto obrigatória e capa ausente ou secundária
-
-Documentos híbridos são comuns. Registrar isso explicitamente e aplicar a hierarquia aspecto por aspecto, e não em bloco.
-
-### 4.2 Registrar o padrão inferido
-
-Levantar e anotar, antes de revisar:
-
-- fonte tipográfica, corpo, espaçamento entre linhas, margens, recuo de parágrafo
-- posição da legenda de ilustração (acima / abaixo)
-- separador na legenda (travessão / hífen / dois-pontos)
-- esquema de numeração de ilustrações (corrida / por seção)
-- taxonomia de ilustrações (Figura, Quadro, Tabela, Gráfico...)
-- sistema de chamada de citação (autor-data / numérico)
-- nomenclatura dos títulos textuais
-- profundidade máxima de seccionamento
-- posição e formato da paginação
-
-Este registro é a base do bloco *Padrão inferido* do relatório de saída.
+As definições específicas de cada padrão continuam em `padrao-inatel.md` / `padrao-nbr10719.md`;
+a hierarquia de precedência e o algoritmo de decisão por aspecto estão nos §§2–3 acima.
 
 ---
 
