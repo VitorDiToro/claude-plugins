@@ -50,6 +50,49 @@ _MULTISPACE_RE = re.compile(r"[ \t]+")
 _NON_WORD_RE = re.compile(r"[^0-9a-záéíóúâêôãõàüçñ ]+", re.IGNORECASE)
 
 
+# --- Location anchoring: the shared, executable contract -------------------
+#
+# Every Fase-0 script MUST anchor its findings through anchor()/project_relative
+# below, never by hand-formatting "path:line". This is the single source of
+# truth for what a location string looks like, so that a foreign-terms finding
+# and a bib finding for the same spot produce the SAME anchor -- the invariant
+# the whole dossier and every reviewing pass rely on. Hand-rolled anchoring is
+# how two scripts silently disagree (1-based vs 0-based, absolute vs relative
+# path) and the dossier ends up internally incoherent.
+#
+# Contract, fixed here so no prose spec has to describe it:
+#   - line numbers are 1-based (matching iter_sentences and every enumerate(...,1));
+#   - the path is made relative to the project root when a root is given, because
+#     the author opens "01_intro.tex:10" in an editor, not the tmp/absolute path;
+#   - the separator is a single ':'; the format is exactly "<path>:<line>".
+
+def project_relative(path, root):
+    """Return `path` relative to `root` with forward slashes, or the original
+    path (normalised to forward slashes) if it isn't under `root` or `root` is
+    None. Forward slashes keep anchors identical across Windows and POSIX so a
+    reference dossier compares byte-for-byte on any platform."""
+    normalized = path.replace("\\", "/")
+    if not root:
+        return normalized
+    try:
+        rel = os.path.relpath(path, root)
+    except ValueError:
+        # e.g. different drives on Windows -> not relativisable
+        return normalized
+    rel = rel.replace("\\", "/")
+    # os.path.relpath can produce '../..' escapes; if it did, the file isn't
+    # really under root, so fall back to the normalised absolute-ish path.
+    if rel.startswith("../"):
+        return normalized
+    return rel
+
+
+def anchor(path, line, root=None):
+    """The one true location string: '<project-relative path>:<1-based line>'.
+    All Fase-0 scripts build every anchor through this function."""
+    return "%s:%d" % (project_relative(path, root), int(line))
+
+
 def find_tex_files(directory):
     """Return every .tex file under `directory`, recursively, path-sorted.
 
