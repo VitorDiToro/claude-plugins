@@ -76,9 +76,10 @@ regimes conforme o arquivo tenha um ou mais escritores:
   item completo (severidade, título, **Local**, Trecho, Problema, Sugestão) **sem o número do
   ID**, com o **Local** em formato `anchor()`. Append não exige releitura, então não há corrida
   de numeração entre escritores.
-- **Finalização (uma vez, no turno da auditoria A):** lê os candidatos acumulados de cada
-  arquivo de múltiplos escritores, **ordena, deduplica e atribui os IDs de uma vez**,
-  reescrevendo o arquivo:
+- **Finalização (uma vez, após todos os contribuintes de múltiplos escritores terem apendado —
+  hoje isso coincide com o turno da auditoria A; quando a auditoria B ligar, roda depois de B
+  retornar):** lê os candidatos acumulados de cada arquivo de múltiplos escritores, **ordena,
+  deduplica e atribui os IDs de uma vez**, reescrevendo o arquivo:
   - **04, 05, 07:** ordenar **por severidade** (do mais crítico ao menor); IDs `E`/`TC`/`REQ`.
   - **08:** ordenar **por localização**; IDs `AV`.
 

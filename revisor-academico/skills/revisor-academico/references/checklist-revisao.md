@@ -47,6 +47,9 @@
 
 <!-- passe: 6 (R) — ESTE BLOCO É DO PASSE 6 (Referências), não do passe 1 -->
 **Bibliografia e citações**
+> Os itens com respaldo de script (chave `\cite` órfã, entrada `.bib` nunca citada, campo
+> essencial ausente por tipo, DOI condicional, formato) são **adjudicação dos candidatos do §5**
+> (`crossref_check.py` + `bib_check.py`) — não varredura do zero.
 - Existência de seção de Referências; citações `\cite` sem entrada
   correspondente.
 - DOI ausente em referências quando outras entradas do mesmo tipo já têm.
