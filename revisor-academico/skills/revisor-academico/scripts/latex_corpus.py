@@ -107,6 +107,75 @@ def find_tex_files(directory):
     return out
 
 
+# --- Manifest-aware discovery (spec-manifesto.md) --------------------------
+#
+# find_tex_files (above) stays glob-all and IMMUTABLE: pattern_profile's
+# structural profile (§2) and normative classification (§3) must see the WHOLE
+# project, or a commented-out \include could hide an institutional marker (e.g.
+# "Historico de Atualizacoes"). Manifest-aware discovery is a SEPARATE function;
+# the two coexist so build_dossier can emit the orphan diff (glob-all - manifest)
+# as a dossier §1 signal. Corpus consumers (iter_sentences/tokenize_words) and
+# the §5 candidate scripts opt into the manifest explicitly.
+
+Manifest = namedtuple("Manifest", ["files", "unresolved", "resolved_ok"])
+
+_INPUT_INCLUDE_RE = re.compile(r"\\(?:input|include)\{([^}]+)\}")
+
+
+def _find_main_file(directory):
+    """The .tex containing BOTH \\documentclass and \\begin{document}
+    (uncommented). Path-sorted first such file, or None."""
+    for path in find_tex_files(directory):
+        text = "".join(strip_comment(ln) for ln in read_text(path).split("\n"))
+        if "\\documentclass" in text and "\\begin{document}" in text:
+            return path
+    return None
+
+
+def _resolve_include_target(arg, directory):
+    """Map an \\input/\\include argument to an existing .tex under `directory`
+    (relative to the project root; append '.tex' if absent), or None."""
+    arg = arg.strip().replace("\\", "/")
+    names = [arg] if arg.endswith(".tex") else [arg + ".tex", arg]
+    for name in names:
+        candidate = os.path.normpath(os.path.join(directory, name))
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def find_manifest_files(directory, main_file=None):
+    """Ordered .tex reachable from the main file via \\input/\\include (the
+    'manifest'). Comments are stripped before scanning, so an \\include behind a
+    % is NOT counted; \\input and \\include both pull the target in; targets
+    resolve under `directory` (append '.tex'); recurses; a visited-set breaks
+    cycles. A target that does not resolve to a file is collected into
+    `unresolved` (a signal), never raised. When no main file is found, falls
+    back to find_tex_files (glob-all) with resolved_ok=False. find_tex_files is
+    NOT changed -- the two discoveries coexist (spec-manifesto.md §0)."""
+    if main_file is None:
+        main_file = _find_main_file(directory)
+    if main_file is None:
+        return Manifest(find_tex_files(directory), [], False)
+    files, unresolved, seen = [], [], set()
+
+    def visit(path):
+        if path in seen:
+            return
+        seen.add(path)
+        files.append(path)
+        for line in read_text(path).split("\n"):
+            for m in _INPUT_INCLUDE_RE.finditer(strip_comment(line)):
+                target = _resolve_include_target(m.group(1), directory)
+                if target is None:
+                    unresolved.append(m.group(1).strip())
+                else:
+                    visit(target)
+
+    visit(main_file)
+    return Manifest(files, unresolved, True)
+
+
 def read_text(path):
     """Read a file as UTF-8 with universal newlines; never raise on bad bytes."""
     # Text mode => \r\n and \r are normalized to \n (Windows CRLF tolerated).
@@ -144,7 +213,7 @@ def tokenize_words(directory):
     """Yield every word token (lowercase, letters incl. accented) across the
     corpus, in reading order. Parity with frequencia-lexical.sh word extraction,
     except [...] command options are also stripped (per the design decision)."""
-    for path in find_tex_files(directory):
+    for path in find_manifest_files(directory).files:
         for line in read_text(path).split("\n"):
             cleaned = _clean_line_for_words(line).lower()
             for match in _WORD_RE.findall(cleaned):
@@ -253,7 +322,7 @@ def iter_sentences(directory):
     Each file is cleaned line by line (comments/commands removed, braces and
     control symbols turned to spaces); characters keep a back-reference to their
     source line so each sentence is anchored to file:line."""
-    for path in find_tex_files(directory):
+    for path in find_manifest_files(directory).files:
         chars = []        # cleaned character stream for this file
         char_lines = []   # parallel: source line number of each char
         for lineno, raw_line in enumerate(read_text(path).split("\n"), start=1):
