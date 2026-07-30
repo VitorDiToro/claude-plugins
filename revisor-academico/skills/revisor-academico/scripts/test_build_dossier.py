@@ -130,15 +130,18 @@ class TestBuildDossierAssembly(unittest.TestCase):
         sec5_start = body.index("§5")
         sec6_start = body.index("§6")
         sec5_body = body[sec5_start:sec6_start]
-        markers = ["foreign_terms.py", "crossref_check.py", "bib_check.py",
-                   "float_check.py", "acronym_check.py", "lexicon_check.py",
-                   "spell_check.py"]
-        # spell_check.py genuinely fails here (no hunspell) -> degrades to a
-        # note that names the script; every other candidate script succeeds
-        # and does NOT print its own filename, so only assert spell_check's
-        # failure note is present and positioned last among these markers.
-        self.assertIn("spell_check.py", sec5_body)
-        self.assertIn("falhou", sec5_body)
+        # Assert the seven candidate-script sections appear in the fixed order.
+        # Match on each script's section title (from _CANDIDATE_SCRIPTS): the
+        # fallback title is a prefix of the script's own heading, so it is
+        # present whether the script succeeded or degraded to a note -- making
+        # this robust to whether hunspell is installed (spell_check succeeds)
+        # or absent (spell_check degrades).
+        titles = [title for _script, title in build_dossier._CANDIDATE_SCRIPTS]
+        positions = [sec5_body.find(t) for t in titles]
+        self.assertNotIn(-1, positions,
+                         "a candidate-script section title is missing from §5")
+        self.assertEqual(positions, sorted(positions),
+                         "candidate-script sections are out of the fixed order")
 
     def test_section_7_omitted_without_enunciado_present_with_one(self):
         without = build_dossier.build_dossier_body(self.d)

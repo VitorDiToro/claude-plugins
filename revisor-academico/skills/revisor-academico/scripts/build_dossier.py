@@ -64,7 +64,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 _CANDIDATE_SCRIPTS = (
     ("foreign_terms.py", "Termos estrangeiros sem itálico"),
     ("crossref_check.py", "Referências cruzadas"),
-    ("bib_check.py", "Referências bibliográficas"),
+    ("bib_check.py", "Verificação de bibliografia"),
     ("float_check.py", "Floats, imagens e tabelas"),
     ("acronym_check.py", "Siglas"),
     ("lexicon_check.py", "Léxico, crase e formato"),
