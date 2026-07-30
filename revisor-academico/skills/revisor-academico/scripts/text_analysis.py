@@ -121,7 +121,7 @@ class _UnionFind:
             self.parent[rb] = ra
 
 
-def section_boilerplate(sentences):
+def section_boilerplate(sentences, root):
     lines = ["### Frases repetidas ou quase-repetidas (boilerplate)", APPROX_NOTE]
 
     # Keep only long-enough sentences; remember their normalized token lists.
@@ -194,7 +194,7 @@ def section_boilerplate(sentences):
         occ = [records[m][0] for m in members]
         # Representative = the longest sentence text in the group.
         rep = max(occ, key=lambda s: len(s.text))
-        locations = sorted("%s:%d" % (s.file, s.line) for s in occ)
+        locations = sorted(latex_corpus.anchor(s.file, s.line, root) for s in occ)
         reported.append((len(occ), len(rep.text), rep.text, locations))
 
     if not reported:
@@ -212,7 +212,7 @@ def section_boilerplate(sentences):
 
 # --- Section 4: longest sentences (prolixity) ------------------------------
 
-def section_long_sentences(sentences):
+def section_long_sentences(sentences, root):
     lines = ["### Frases mais longas (prolixidade)", APPROX_NOTE]
     scored = []
     for s in sentences:
@@ -233,7 +233,7 @@ def section_long_sentences(sentences):
                      % (LONG_SENTENCE_WORDS, min(LONG_FALLBACK, len(scored))))
 
     for wc, s in selected:
-        lines.append("- **%d palavras** — %s:%d" % (wc, s.file, s.line))
+        lines.append("- **%d palavras** — %s" % (wc, latex_corpus.anchor(s.file, s.line, root)))
         lines.append("  > %s" % _preview(s.text))
     return lines
 
@@ -259,8 +259,8 @@ def main(directory):
     out = ["## Análise textual do documento", ""]
     out += section_words(tokens) + [""]
     out += section_expressions(tokens) + [""]
-    out += section_boilerplate(sentences) + [""]
-    out += section_long_sentences(sentences)
+    out += section_boilerplate(sentences, directory) + [""]
+    out += section_long_sentences(sentences, directory)
     print("\n".join(out))
 
 

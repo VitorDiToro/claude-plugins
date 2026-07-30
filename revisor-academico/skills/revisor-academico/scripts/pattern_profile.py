@@ -161,7 +161,8 @@ def main(directory):
     sizes = []
     for path in files:
         words = len(latex_corpus.read_text(path).split())
-        sizes.append(("%d %s" % (words, path), words))
+        rel = latex_corpus.project_relative(path, directory)
+        sizes.append(("%d %s" % (words, rel), words))
     # sort -rn: count desc, ties by reversed full-line order.
     sizes.sort(key=lambda s: (s[1], s[0]), reverse=True)
     out.extend(line for line, _w in sizes)
