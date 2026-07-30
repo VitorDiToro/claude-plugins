@@ -174,6 +174,19 @@ _NONPROSE_COMMANDS = (
     "setcounter", "geometry", "pagestyle",
 )
 
+# Calibration change #2 (real-artifact finding: others/acronym.tex itself was
+# being spell-checked as if it were prose). Acronym-DEFINITION commands are
+# MULTI-ARG (\newacronym{key}{SIGLA}{Long expansion},
+# \DeclareAcronym{key}{short=SIGLA,long=Long expansion}, ...): the sigla
+# and/or expansion text live in a LATER brace group, not the first, so
+# _NONPROSE_COMMANDS' first-arg-only blanking above is not enough. Mirrors
+# acronym_check.py's own _MULTI_ARG_NONPROSE_COMMANDS handling (ALL
+# consecutive {...} groups right after the command are blanked, not just the
+# first) -- see _nonprose_spans below.
+_MULTI_ARG_NONPROSE_COMMANDS = (
+    "newacronym", "acro", "acs", "acl", "acrodef", "DeclareAcronym", "newacro",
+)
+
 
 def _skip_ws(line, i):
     while i < len(line) and line[i] in " \t":
@@ -224,10 +237,13 @@ def _brace_group_after(line, i):
 
 
 def _nonprose_spans(line):
-    """Return [(start, end), ...] character spans covering the FIRST {...}
-    argument of every _NONPROSE_COMMANDS occurrence on `line` -- environment
-    names, label/ref/cite keys, package/class/file names -- so that argument
-    text is excluded from the spell-checked prose."""
+    """Return [(start, end), ...] character spans covering non-prose argument
+    text on `line`, so that text is excluded from the spell-checked prose:
+      - the FIRST {...} argument of every _NONPROSE_COMMANDS occurrence
+        (environment names, label/ref/cite keys, package/class/file names);
+      - EVERY consecutive {...} argument of every _MULTI_ARG_NONPROSE_COMMANDS
+        occurrence (acronym-definition commands whose sigla/expansion live in
+        a later group, not the first -- see that tuple's comment)."""
     spans = []
     for cmd in _NONPROSE_COMMANDS:
         for m in re.finditer(r"\\%s\*?\b" % re.escape(cmd), line):
@@ -237,6 +253,18 @@ def _nonprose_spans(line):
             span, _i = _brace_group_after(line, i)
             if span is not None:
                 spans.append(span)
+
+    for cmd in _MULTI_ARG_NONPROSE_COMMANDS:
+        for m in re.finditer(r"\\%s\*?\b" % re.escape(cmd), line):
+            i = _skip_optional_option(line, _skip_ws(line, m.end()))
+            if i is None:
+                continue
+            while True:
+                span, i = _brace_group_after(line, i)
+                if span is None:
+                    break
+                spans.append(span)
+                i = _skip_ws(line, i)
     return spans
 
 
@@ -273,6 +301,93 @@ def _clean_prose_line(raw):
     line = line.replace("\\", " ")
     line = line.replace("~", " ")  # LaTeX non-breaking space
     return line
+
+
+# --- acronym-noise suppression (calibration changes #1 and #3) -------------
+#
+# Real-artifact finding: on a real Portuguese HPC/6G thesis, hunspell/pt_BR
+# flagged 765 distinct candidates, ~70% of the whole dossier, almost entirely
+# acronym/technical noise (GPU, HPC, NVAIE, MIG, ...) drowning the real
+# Portuguese typos this script exists to find. An all-caps token is never a
+# Portuguese spelling error -- it's an acronym, adjudicated by
+# acronym_check.py, not here. Single-letter and mixed-case tokens are
+# deliberately NOT covered by this rule (a genuine mixed-case typo must still
+# surface); a document-defined MIXED-CASE sigla is instead caught by
+# _defined_siglas below.
+
+_ALL_CAPS_ACRONYM_RE = re.compile(r"^[A-Z0-9]{2,}$")
+
+# Calibration change #3: siglas the document DEFINES via an acronym-
+# declaration command are suppressed even when not all-caps (e.g. a doc-
+# defined "NvLink"-style token), which change #1 above cannot catch. Only the
+# three shapes with a well-documented, unambiguous sigla position are parsed
+# (the others in _MULTI_ARG_NONPROSE_COMMANDS are still excluded from prose
+# by change #2 above, just not mined for a sigla here -- their argument
+# shapes are not uniformly used in this project's real .tex sources, so
+# guessing a brace position would be speculative):
+#   - \newacronym{key}{SIGLA}{Long expansion}        -> 2nd brace group
+#   - \acro{SIGLA}{Long expansion}                    -> 1st brace group
+#   - \DeclareAcronym{key}{short=SIGLA,long=...}       -> `short=` value
+#     inside the 2nd brace group
+# Small local duplication of acronym_check.py's brace-span-scanning pattern
+# (not imported off of it), per this module's own independently-runnable-
+# script design note above.
+
+_SHORT_KV_RE = re.compile(r"short\s*=\s*([^,}]+)")
+
+
+def _brace_group_texts(line, i):
+    """Consecutive {...} argument TEXTS starting at index i (after any
+    optional [...] group has already been skipped by the caller) -- same
+    brace-group scan as the _MULTI_ARG_NONPROSE_COMMANDS loop in
+    _nonprose_spans, but returning the group CONTENTS, not just spans."""
+    texts = []
+    while True:
+        span, i = _brace_group_after(line, i)
+        if span is None:
+            break
+        start, end = span
+        texts.append(line[start:end])
+        i = _skip_ws(line, i)
+    return texts
+
+
+def _defined_siglas(directory):
+    """Set of siglas the document itself DEFINES via \\newacronym, \\acro or
+    \\DeclareAcronym, scanned once per corpus (see comment above for which
+    brace group holds the sigla for each). Comment-stripped lines only; never
+    raises -- malformed/unbalanced braces on a line simply yield fewer/no
+    groups, never a crash."""
+    siglas = set()
+    for path in latex_corpus.find_manifest_files(directory).files:
+        for raw in latex_corpus.read_text(path).split("\n"):
+            line = latex_corpus.strip_comment(raw)
+            if not line.strip():
+                continue
+            for cmd in ("newacronym", "acro", "DeclareAcronym"):
+                for m in re.finditer(r"\\%s\*?\b" % re.escape(cmd), line):
+                    i = _skip_optional_option(line, _skip_ws(line, m.end()))
+                    if i is None:
+                        continue
+                    texts = _brace_group_texts(line, i)
+                    if cmd == "newacronym" and len(texts) >= 2:
+                        siglas.add(texts[1].strip())
+                    elif cmd == "acro" and len(texts) >= 1:
+                        siglas.add(texts[0].strip())
+                    elif cmd == "DeclareAcronym" and len(texts) >= 2:
+                        kv = _SHORT_KV_RE.search(texts[1])
+                        if kv:
+                            siglas.add(kv.group(1).strip())
+    return siglas
+
+
+def _is_acronym_noise(word, defined_siglas):
+    """True when `word` must never be reported as a spelling candidate
+    because it's acronym-shaped (change #1) or is a sigla this very document
+    defines (change #3)."""
+    if _ALL_CAPS_ACRONYM_RE.match(word):
+        return True
+    return word in defined_siglas
 
 
 def _scan_file(path):
@@ -317,9 +432,14 @@ def _scan_file(path):
 
 def scan(directory):
     """Yield (file, line_no, word) for every hunspell-flagged token across
-    the manifest-scoped corpus."""
+    the manifest-scoped corpus, EXCLUDING acronym-shaped tokens and siglas
+    the document itself defines (calibration changes #1 and #3 -- see
+    _is_acronym_noise)."""
+    defined_siglas = _defined_siglas(directory)
     for path in latex_corpus.find_manifest_files(directory).files:
         for line_no, word in _scan_file(path):
+            if _is_acronym_noise(word, defined_siglas):
+                continue
             yield path, line_no, word
 
 
@@ -345,13 +465,21 @@ def main(directory):
         print("\n".join(out))
         return
 
+    # Calibration change #4: one bullet per candidate -- word, total
+    # occurrence count, and the FIRST anchor only (not a per-occurrence
+    # anchor list, which is what turned a single "GPU" candidate into 107
+    # lines on the real-artifact run). `locs` is already in document order
+    # (manifest file order, then increasing line number), so locs[0] IS the
+    # first occurrence.
     for word in sorted(by_word.keys(), key=lambda w: (-len(by_word[w]), w.lower())):
         locs = by_word[word]
+        first_path, first_line = locs[0]
         out.append("")
-        out.append("- **%s** (%d ocorrência%s)"
-                   % (word, len(locs), "s" if len(locs) != 1 else ""))
-        for path, line_no in locs:
-            out.append("  - `%s`" % latex_corpus.anchor(path, line_no, directory))
+        out.append(
+            "- **%s** (%d ocorrência%s) — `%s`"
+            % (word, len(locs), "s" if len(locs) != 1 else "",
+               latex_corpus.anchor(first_path, first_line, directory))
+        )
 
     print("\n".join(out))
 
