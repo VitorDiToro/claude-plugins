@@ -9,7 +9,10 @@
 # Section order is FIXED (Brief section 6/7 of the design):
 #   §1 Manifesto de arquivos       -- find_manifest_files + orphan diff
 #   §2 Perfil de padrão            -- pattern_profile.py, verbatim
-#   §3 Classificação normativa     -- DEFERRAL header only, no verdict here
+#   §3 Classificação normativa     -- pattern_profile.classify_standard(), a
+#                                      deterministic label (INATEL |
+#                                      NBR10719/PUC | híbrido | nenhum
+#                                      reconhecido), not a subjective verdict
 #   §4 Análise textual             -- text_analysis.py, verbatim
 #   §5 Candidatos objetivos        -- the 7 candidate scripts, in FIXED order:
 #                                      foreign_terms, crossref_check, bib_check,
@@ -21,10 +24,11 @@
 #
 # Candidates, never verdicts (project-wide rule): this orchestrator only
 # POSITIONS output from the other scripts. It never classifies, parses, or
-# rewrites what a candidate script emitted -- §3 in particular is a short
-# deferral note, not computed logic, so INATEL vs NBR10719/PUC classification
-# stays a reviewing-pass decision, made from the raw signals pattern_profile
-# already put in §2.
+# rewrites what a candidate script emitted. §3 is the one sanctioned
+# exception: pattern_profile.classify_standard() is a PURE, deterministic
+# if/else over objective structural facts (not a subjective judgement call),
+# so importing and calling it directly here -- never parsing pattern_profile's
+# stdout -- is orchestrator glue, not a verdict this module invents.
 #
 # Never-raise / always-completes: once the blocking prerequisite (hunspell +
 # pt_BR, checked FIRST, before any writing) is satisfied, a single failing
@@ -50,6 +54,7 @@ import subprocess
 import sys
 
 import latex_corpus
+import pattern_profile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -225,20 +230,41 @@ def _section_2(directory):
     return lines
 
 
-# --- §3 Classificação normativa: DEFERRAL, not a computed verdict -----------
+# --- §3 Classificação normativa: computed label, not a subjective verdict --
+#
+# Basis text keyed by label: derived 1:1 from pattern_profile.classify_standard's
+# own INATEL/NBR-PUC mapping (see that function's docstring), so no signal
+# lookup is duplicated here -- this only chooses the matching sentence.
+_CLASSIFICATION_BASIS = {
+    "INATEL": (
+        "sinais de padrão INATEL presentes (Histórico de Atualizações, "
+        "seção \"Conclusão\" e/ou `printonlyused`); nenhum sinal de "
+        "NBR10719/PUC encontrado."
+    ),
+    "NBR10719/PUC": (
+        "sinais de padrão NBR10719/PUC presentes (seção \"Resumo\", "
+        "\"Considerações finais\", \"Glossário\" e/ou \"Folha de rosto\"); "
+        "nenhum sinal de INATEL encontrado."
+    ),
+    "híbrido": (
+        "sinais de AMBAS as famílias presentes -- INATEL e NBR10719/PUC."
+    ),
+    "nenhum reconhecido": (
+        "nenhum sinal de padrão institucional (nem INATEL, nem NBR10719/PUC) "
+        "foi encontrado no corpus."
+    ),
+}
 
-def _section_3():
+
+def _section_3(directory):
     lines = ["# §3 Classificação normativa", ""]
-    lines.append(
-        "_Este orquestrador posiciona sinais, nunca calcula veredito (regra do "
-        "projeto: candidatos, não veredictos)._"
-    )
+    label = pattern_profile.classify_standard(directory)
+    lines.append("**Classificação normativa:** %s" % label)
     lines.append("")
+    basis = _CLASSIFICATION_BASIS.get(label, "sinal não mapeado.")
     lines.append(
-        "A classificação normativa deste projeto -- INATEL | NBR10719/PUC | "
-        "híbrido | nenhum -- ainda não foi decidida aqui. Cabe à passada de "
-        "revisão decidi-la a partir dos sinais de padrão institucional já "
-        "levantados em §2 (subseção \"Sinais de padrão institucional\")."
+        "_Base da classificação (sinais de padrão institucional de §2): %s_"
+        % basis
     )
     return lines
 
@@ -308,7 +334,7 @@ def build_dossier_body(directory, enunciado_path=None):
     parts.append("")
     parts += _section_2(directory)
     parts.append("")
-    parts += _section_3()
+    parts += _section_3(directory)
     parts.append("")
     parts += _section_4(directory)
     parts.append("")

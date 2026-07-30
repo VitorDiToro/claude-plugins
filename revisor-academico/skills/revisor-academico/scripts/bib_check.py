@@ -43,7 +43,7 @@ def find_bib_files(directory):
     out = []
     for root, _dirs, files in os.walk(directory):
         for name in files:
-            if name.endswith(".bib"):
+            if name.lower().endswith(".bib"):
                 out.append(os.path.join(root, name))
     out.sort()
     return out

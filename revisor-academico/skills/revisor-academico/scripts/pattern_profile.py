@@ -102,6 +102,48 @@ def _uniq_c_alpha(items):
     return ["%7d %s" % (c, v) for v, c in rows]
 
 
+# --- §3 normative-standard classification (single source of truth) ---------
+#
+# Deterministic if/else over the SAME objective structural signals already
+# surfaced as raw facts, above, in "Sinais de padrão institucional" -- NOT a
+# subjective candidate. build_dossier.py's §3 imports and calls this directly
+# (never parses this module's stdout) so the dossier's classification label
+# and this module's §2 raw signals can never disagree.
+#
+# Mapping (exact):
+#   INATEL signal present, NBR/PUC absent -> "INATEL"
+#   NBR/PUC signal present, INATEL absent -> "NBR10719/PUC"
+#   both present                          -> "híbrido"
+#   neither present                       -> "nenhum reconhecido"
+# FOLHA_ROSTO_RE is grouped with the NBR/PUC signals.
+
+def classify_standard(directory):
+    """Deterministic normative-standard classification from structural
+    signals. Pure if/else over objective facts (NOT a subjective candidate).
+    Never raises: find_tex_files/_grep_n degrade gracefully (empty results)
+    on an unreadable/missing directory, so this simply returns "nenhum
+    reconhecido" rather than propagating."""
+    files = latex_corpus.find_tex_files(directory)
+    inatel = bool(
+        _grep_n(files, HISTORICO_ATUALIZACOES_RE, directory)
+        or _grep_n(files, PRINTONLYUSED_RE, directory)
+        or _grep_n(files, CONCLUSAO_SECTION_RE, directory)
+    )
+    nbr_puc = bool(
+        _grep_n(files, RESUMO_SECTION_RE, directory)
+        or _grep_n(files, CONSIDERACOES_FINAIS_RE, directory)
+        or _grep_n(files, GLOSSARIO_SECTION_RE, directory)
+        or _grep_n(files, FOLHA_ROSTO_RE, directory)
+    )
+    if inatel and nbr_puc:
+        return "híbrido"
+    if inatel:
+        return "INATEL"
+    if nbr_puc:
+        return "NBR10719/PUC"
+    return "nenhum reconhecido"
+
+
 def main(directory):
     files = latex_corpus.find_tex_files(directory)
     out = []

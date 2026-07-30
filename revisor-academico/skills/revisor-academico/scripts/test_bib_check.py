@@ -71,6 +71,25 @@ class TestBibCheckContract(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("nenhum arquivo `.bib` encontrado", r.stdout)
 
+    def test_uppercase_bib_extension_is_found(self):
+        # A `.BIB` (or any other-cased extension) must not silently disable
+        # the whole bibliography check family on case-preserving filesystems --
+        # matches latex_corpus's deliberate case-insensitive `.tex` convention.
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        with open(os.path.join(d, "main.tex"), "w", encoding="utf-8") as f:
+            f.write("\\documentclass{article}\n\\begin{document}\n"
+                    "Ver \\cite{fantasma}.\n\\bibliography{refs}\n\\end{document}\n")
+        with open(os.path.join(d, "refs.BIB"), "w", encoding="utf-8") as f:
+            f.write("@book{naocitado, title={T}, author={A}, publisher={P}, year={2020}}\n")
+        r = run("bib_check.py", d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        # the uppercase-extension .bib must have been discovered/parsed:
+        # both an orphan-entry signal and the cite-without-entry signal fire.
+        self.assertIn("naocitado", r.stdout)
+        self.assertIn("fantasma", r.stdout)
+        self.assertNotIn("nenhum arquivo `.bib` encontrado", r.stdout)
+
 
 class TestBibCheckDetection(unittest.TestCase):
     """Detection-logic coverage for bib_check's inherited checks (essential

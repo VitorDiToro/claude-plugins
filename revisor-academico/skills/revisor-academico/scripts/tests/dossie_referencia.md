@@ -70,9 +70,9 @@ Seção "Glossário":
 
 # §3 Classificação normativa
 
-_Este orquestrador posiciona sinais, nunca calcula veredito (regra do projeto: candidatos, não veredictos)._
+**Classificação normativa:** nenhum reconhecido
 
-A classificação normativa deste projeto -- INATEL | NBR10719/PUC | híbrido | nenhum -- ainda não foi decidida aqui. Cabe à passada de revisão decidi-la a partir dos sinais de padrão institucional já levantados em §2 (subseção "Sinais de padrão institucional").
+_Base da classificação (sinais de padrão institucional de §2): nenhum sinal de padrão institucional (nem INATEL, nem NBR10719/PUC) foi encontrado no corpus._
 
 # §4 Análise textual do documento
 
