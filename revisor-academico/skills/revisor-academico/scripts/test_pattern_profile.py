@@ -35,5 +35,39 @@ class TestPatternProfileAnchoring(unittest.TestCase):
         self.assertIn("main.tex", section)
 
 
+class TestGrepNAnchoring(unittest.TestCase):
+    """_grep_n's 'path:lineno:content' hits (float/acronym/bibstyle/lang package
+    lines, institutional-signal lines) must carry a ROOT-RELATIVE path, never a
+    raw absolute filesystem path -- same Fase-0 hard rule #1 as project_relative
+    everywhere else. A relative-substring assertIn alone would NOT catch a leak
+    here (the relative path is a substring of the absolute one), so the
+    discriminating check is assertNotIn(abs_dir, stdout)."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        with open(os.path.join(self.d, "main.tex"), "w", encoding="utf-8") as f:
+            f.write(
+                "\\documentclass{article}\n"
+                "\\usepackage{float}\n"
+                "\\usepackage[brazil]{babel}\n"
+                "\\begin{document}\n"
+                "Texto.\n"
+                "\\end{document}\n"
+            )
+
+    def tearDown(self):
+        shutil.rmtree(self.d, ignore_errors=True)
+
+    def test_grep_n_hits_are_root_relative_not_absolute(self):
+        r = run("pattern_profile.py", self.d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        # the absolute tempdir prefix must never leak into stdout
+        self.assertNotIn(self.d, r.stdout)
+        # FLOAT_PKG_RE hit (line 2) and LANG_PKG_RE hit (line 3) must appear
+        # with the root-relative 'main.tex' path.
+        self.assertIn("main.tex:2:\\usepackage{float}", r.stdout)
+        self.assertIn("main.tex:3:\\usepackage[brazil]{babel}", r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

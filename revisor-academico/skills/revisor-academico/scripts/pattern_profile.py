@@ -53,15 +53,18 @@ def _iter_lines(files):
             yield path, lineno, line
 
 
-def _grep_n(files, regex):
+def _grep_n(files, regex, root):
     """Emulate `grep -rn regex`: matching lines as 'path:lineno:line',
-    deterministically path/line sorted."""
+    deterministically path/line sorted. The path component is rendered
+    root-relative via latex_corpus.project_relative (Fase-0 hard rule #1);
+    only the path is anchored -- the trailing content stays raw, exactly as
+    grep -rn would emit it."""
     hits = []
     for path, lineno, line in _iter_lines(files):
         if regex.search(line):
             hits.append((path, lineno, line))
     hits.sort(key=lambda h: (h[0], h[1]))
-    return ["%s:%d:%s" % (p, ln, txt) for p, ln, txt in hits]
+    return ["%s:%d:%s" % (latex_corpus.project_relative(p, root), ln, txt) for p, ln, txt in hits]
 
 
 def _count_matches(files, regex):
@@ -110,7 +113,7 @@ def main(directory):
     out.append("### Especificadores de float")
     out.extend(_uniq_c_desc(_collect_matches(files, FLOAT_SPEC_RE)))
     out.append("Pacote `float` carregado:")
-    hits = _grep_n(files, FLOAT_PKG_RE)
+    hits = _grep_n(files, FLOAT_PKG_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append("")
 
@@ -119,7 +122,7 @@ def main(directory):
     out.append("Ocorrências de comandos de acrônimo (\\ac, \\acs, \\acl, \\acf, \\acp): %d"
                % _count_matches(files, ACRONYM_CMD_RE))
     out.append("Pacote `acronym`/`acro`:")
-    hits = _grep_n(files, ACRONYM_PKG_RE)
+    hits = _grep_n(files, ACRONYM_PKG_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append("Padrões de expansão manual '(SIGLA)': %d"
                % _count_matches(files, MANUAL_SIGLA_RE))
@@ -127,7 +130,7 @@ def main(directory):
 
     # 3. Citation / bibliography style.
     out.append("### Estilo de citação/bibliografia")
-    hits = _grep_n(files, BIBSTYLE_RE)
+    hits = _grep_n(files, BIBSTYLE_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.extend(_uniq_c_alpha(_collect_matches(files, CITE_RE)))
     out.append("")
@@ -146,7 +149,7 @@ def main(directory):
 
     # 6. Language configuration.
     out.append("### Configuração de idioma")
-    hits = _grep_n(files, LANG_PKG_RE)
+    hits = _grep_n(files, LANG_PKG_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append("")
 
@@ -173,26 +176,26 @@ def main(directory):
     out.append("### Sinais de padrão institucional")
     out.append("Sinais de INATEL:")
     out.append("Histórico de Atualizações:")
-    hits = _grep_n(files, HISTORICO_ATUALIZACOES_RE)
+    hits = _grep_n(files, HISTORICO_ATUALIZACOES_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append('Seção "Conclusão":')
-    hits = _grep_n(files, CONCLUSAO_SECTION_RE)
+    hits = _grep_n(files, CONCLUSAO_SECTION_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append("Acrônimos com `printonlyused`:")
-    hits = _grep_n(files, PRINTONLYUSED_RE)
+    hits = _grep_n(files, PRINTONLYUSED_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append("Sinais de NBR10719/PUC:")
     out.append('Seção "Resumo":')
-    hits = _grep_n(files, RESUMO_SECTION_RE)
+    hits = _grep_n(files, RESUMO_SECTION_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append('Seção "Considerações finais":')
-    hits = _grep_n(files, CONSIDERACOES_FINAIS_RE)
+    hits = _grep_n(files, CONSIDERACOES_FINAIS_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append('Seção "Glossário":')
-    hits = _grep_n(files, GLOSSARIO_SECTION_RE)
+    hits = _grep_n(files, GLOSSARIO_SECTION_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
     out.append('"Folha de rosto":')
-    hits = _grep_n(files, FOLHA_ROSTO_RE)
+    hits = _grep_n(files, FOLHA_ROSTO_RE, directory)
     out.extend(hits if hits else ["(não encontrado)"])
 
     print("\n".join(out))
