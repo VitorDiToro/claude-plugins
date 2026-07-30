@@ -87,10 +87,34 @@ class TestFloatCheckDetection(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("nenhum problema de floats, imagens ou tabelas detectado", r.stdout)
 
-    def test_image_resolved_via_figures_subfolder_and_extension(self):
-        # \includegraphics{img} with NO extension; the real file lives under
-        # <source-dir>/figures/img.png -- both the extension-appending and
-        # the figures/ subfolder widening must kick in together.
+    def test_image_resolved_via_root_figures_subfolder_and_extension(self):
+        # \includegraphics{img} with NO extension; the real file lives
+        # under <ROOT>/figures/img.png (not the chapter's own directory) --
+        # both the extension-appending and the root-level figures/ subfolder
+        # widening must kick in together, even for a reference sitting in a
+        # chapter sub-file.
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        os.makedirs(os.path.join(d, "cap"))
+        os.makedirs(os.path.join(d, "figures"))
+        with open(os.path.join(d, "main.tex"), "w", encoding="utf-8") as f:
+            f.write("\\documentclass{article}\n\\begin{document}\n"
+                    "\\include{cap/ch1}\n\\end{document}\n")
+        with open(os.path.join(d, "cap", "ch1.tex"), "w", encoding="utf-8") as f:
+            f.write("\\begin{figure}\\includegraphics{img}"
+                    "\\caption{c}\\label{fig:img}\\end{figure}\n")
+        with open(os.path.join(d, "figures", "img.png"), "w") as f:
+            f.write("x")
+        r = run("float_check.py", d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("nenhum problema de floats, imagens ou tabelas detectado", r.stdout)
+
+    def test_chapter_local_image_without_graphicspath_is_flagged_missing(self):
+        # Fix-round-1 regression guard: resolving against each including
+        # .tex file's OWN directory was removed (false-negative vector).
+        # An image that lives ONLY under the chapter's own figures/
+        # subfolder -- with no \graphicspath declared -- would fail to
+        # compile under a standard root build, so it MUST be flagged.
         d = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, d, ignore_errors=True)
         os.makedirs(os.path.join(d, "cap", "figures"))
@@ -101,10 +125,11 @@ class TestFloatCheckDetection(unittest.TestCase):
             f.write("\\begin{figure}\\includegraphics{img}"
                     "\\caption{c}\\label{fig:img}\\end{figure}\n")
         with open(os.path.join(d, "cap", "figures", "img.png"), "w") as f:
-            f.write("x")
+            f.write("x")  # exists ONLY chapter-locally, not under the root
         r = run("float_check.py", d)
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn("nenhum problema de floats, imagens ou tabelas detectado", r.stdout)
+        self.assertIn("Imagem referenciada não encontrada", r.stdout)
+        self.assertIn("`img`", r.stdout)
 
     def test_missing_image_message_names_the_argument(self):
         d = self._project(
@@ -148,6 +173,18 @@ class TestFloatCheckDetection(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("ambiente `table` sem `\\caption`", r.stdout)
         self.assertNotIn("e sem", r.stdout)  # only ONE item missing, no join
+
+    def test_captionsetup_is_not_mistaken_for_caption(self):
+        # Fix-round-1 regression guard: \captionsetup{...} (caption package
+        # styling command, common in ABNT templates) must NOT satisfy the
+        # \caption requirement -- a table with only \captionsetup and no
+        # real \caption is still missing its caption.
+        d = self._project(
+            "\\begin{table}\\captionsetup{font=small}\\label{tab:x}\\end{table}"
+        )
+        r = run("float_check.py", d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("ambiente `table` sem `\\caption`", r.stdout)
 
     def test_complete_figure_not_flagged(self):
         d = self._project(
@@ -222,11 +259,15 @@ class TestFloatCheckDetection(unittest.TestCase):
         r = run("float_check.py", d)
         self.assertEqual(r.returncode, 0, r.stderr)
 
-    def test_empty_includegraphics_argument_does_not_crash_or_get_flagged(self):
+    def test_empty_includegraphics_argument_is_flagged_as_missing(self):
+        # An empty \includegraphics{} target is itself a broken reference;
+        # it must be surfaced (not silently skipped) and must never crash.
         d = self._project("\\begin{figure}\\includegraphics{}\\end{figure}")
         r = run("float_check.py", d)
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertNotIn("aponta para ``", r.stdout)
+        self.assertIn("Imagem referenciada não encontrada", r.stdout)
+        self.assertIn("argumento vazio", r.stdout)
+        self.assertNotIn("aponta para ``", r.stdout)  # not the generic "missing named arg" phrasing
 
 
 if __name__ == "__main__":

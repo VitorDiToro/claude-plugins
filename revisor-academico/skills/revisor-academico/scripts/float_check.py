@@ -11,13 +11,13 @@
 #
 # Checks emitted:
 #   1. \includegraphics{p} whose target image file cannot be found on disk.
-#      `p` is resolved relative to the project directory AND (a pragmatic
-#      widening beyond the strict checklist wording, to avoid false positives
-#      in real multi-chapter projects where each chapter keeps its own
-#      figures/ folder) relative to the .tex source file's own directory,
-#      trying the common image subfolders figures/ and fig/ under each, and
-#      -- when `p` has no recognised image extension -- appending each of
-#      .png/.pdf/.jpg/.jpeg/.eps.
+#      `p` is resolved ONLY relative to the project ROOT (never relative to
+#      the including .tex sub-file's own directory -- see _base_dirs for
+#      why), trying the common image subfolders figures/, fig/, images/,
+#      img/ under the root, and -- when `p` has no recognised image
+#      extension -- appending each of .png/.pdf/.jpg/.jpeg/.eps. An empty
+#      argument (\includegraphics{}) is itself a broken reference and is
+#      flagged directly, never silently skipped.
 #   2. The SAME \includegraphics argument used in 2+ places (candidate for
 #      unintentional figure reuse / copy-paste).
 #   3. A figure/figure*/table/table* environment missing \caption OR \label.
@@ -60,8 +60,9 @@ ROW_THRESHOLD = 30
 # when it doesn't (mirrors the extensions pdflatex itself tries).
 _IMAGE_EXTS = (".png", ".pdf", ".jpg", ".jpeg", ".eps")
 
-# Common image subfolders tried under each base directory, per the checklist.
-_IMAGE_SUBDIRS = ("figures", "fig")
+# Common image subfolders tried under the project root, per the checklist
+# (figures/, fig/) plus two more common conventions (images/, img/).
+_IMAGE_SUBDIRS = ("figures", "fig", "images", "img")
 
 _FLOAT_ENV_NAMES = ("figure", "figure*", "table", "table*")
 _TABULAR_ENV_NAMES = ("tabular", "tabular*", "tabularx")
@@ -79,10 +80,17 @@ _BOOKTABS_RE = re.compile(r"\\(?:top|mid|bottom)rule\b")
 # perturbs the stack. This also means a \caption or \label sitting inside
 # some OTHER environment nested in a figure still correctly marks the
 # enclosing figure/table frame (it's simply not pushed/popped itself).
+#
+# The \caption alternative REQUIRES the opening brace ("\{") right after the
+# optional "*", so it matches \caption{...}/\caption*{...} only -- NOT
+# \captionsetup{...} (the caption package's styling command, very common in
+# ABNT templates) or \captionof{...}{...} (the caption package's out-of-float
+# variant). Without this anchor, \captionsetup{...} would be mistaken for a
+# real caption and silently suppress the "missing \caption" finding.
 _ENV_EVENT_RE = re.compile(
     r"\\begin\{(?P<begin>figure\*?|table\*?|tabular\*?|tabularx)\}"
     r"|\\end\{(?P<end>figure\*?|table\*?|tabular\*?|tabularx)\}"
-    r"|\\caption\*?"
+    r"|\\caption\*?\{"
     r"|\\label\{[^}]*\}"
     r"|\\\\"
 )
@@ -100,27 +108,38 @@ def _candidate_names(arg):
     return [arg] + [arg + e for e in _IMAGE_EXTS]
 
 
-def _base_dirs(root, source_dir):
-    """Base directories to resolve an image path against: the project root
-    and the .tex file's own directory, each combined with the common
-    figures/ and fig/ subfolders. Deduplicated, order-preserving."""
-    bases = []
-    for base in (root, source_dir):
-        if not base:
-            continue
-        if base not in bases:
-            bases.append(base)
-        for sub in _IMAGE_SUBDIRS:
-            combined = os.path.join(base, sub)
-            if combined not in bases:
-                bases.append(combined)
+def _base_dirs(root):
+    """Base directories to resolve an image path against: the project ROOT
+    and its common image subfolders ONLY -- deliberately NOT each including
+    .tex sub-file's own directory. Standard pdflatex/xelatex resolves
+    \\includegraphics targets relative to the compile directory (the main
+    .tex file's directory -- the project root passed on the CLI) or an
+    explicit \\graphicspath, NEVER relative to a \\input/\\include'd
+    sub-file's own directory. Resolving against each source file's own
+    directory would be a FALSE-NEGATIVE vector: a chapter-local image (e.g.
+    `cap/figures/x.png` referenced as `\\includegraphics{x}` from
+    `cap/ch.tex` with no \\graphicspath) would appear to "resolve" here but
+    would fail to compile under a standard root build.
+
+    KNOWN LIMITATION: \\graphicspath itself is not parsed, so a project that
+    declares a non-root \\graphicspath may see false-positive "missing"
+    candidates for images that actually compile fine. That is the safe
+    direction for a candidate signal -- a false negative (silently missing
+    a genuinely broken reference) is worse than an occasional false
+    positive the reviewer can dismiss."""
+    bases = [root]
+    for sub in _IMAGE_SUBDIRS:
+        combined = os.path.join(root, sub)
+        if combined not in bases:
+            bases.append(combined)
     return bases
 
 
-def _image_exists(arg, root, source_dir):
+def _image_exists(arg, root):
     """True if `arg` (an \\includegraphics argument, possibly extension-
     less) resolves to an existing file under any tried base-dir/extension
-    combination. NEVER raises: any filesystem oddity (weird path, OS error)
+    combination (project root + common image subfolders only -- see
+    _base_dirs). NEVER raises: any filesystem oddity (weird path, OS error)
     degrades to 'not found', matching the 'candidates never crash'
     contract -- an unresolvable path is a missing-image CANDIDATE, not a
     crash."""
@@ -129,7 +148,7 @@ def _image_exists(arg, root, source_dir):
         return False
     arg = arg.replace("\\", "/")
     names = _candidate_names(arg)
-    for base in _base_dirs(root, source_dir):
+    for base in _base_dirs(root):
         for name in names:
             try:
                 candidate = os.path.join(base, name)
@@ -249,14 +268,21 @@ def check(directory):
     for path, line_no, arg in _scan_includegraphics(directory):
         key = arg.strip()
         if not key:
-            continue  # \includegraphics{} -- nothing meaningful to check
-        source_dir = os.path.dirname(path)
-        if not _image_exists(key, directory, source_dir):
+            # \includegraphics{} -- an empty argument IS itself a broken
+            # reference; flag it directly rather than silently skipping.
+            # Not added to by_arg: deduplicating "" against other "" hits
+            # would be a meaningless signal on its own.
+            findings["missing_image"].append(
+                "`%s` — `\\includegraphics` com argumento vazio (referência quebrada)"
+                % latex_corpus.anchor(path, line_no, directory)
+            )
+            continue
+        if not _image_exists(key, directory):
             findings["missing_image"].append(
                 "`%s` — `\\includegraphics` aponta para `%s`, não encontrado "
-                "no projeto (testado na raiz, em `figures/`/`fig/`, com "
-                "extensões %s)"
+                "no projeto (testado na raiz e em %s, com extensões %s)"
                 % (latex_corpus.anchor(path, line_no, directory), key,
+                   "/".join("`%s/`" % s for s in _IMAGE_SUBDIRS),
                    "/".join(e.lstrip(".") for e in _IMAGE_EXTS))
             )
         by_arg.setdefault(key, []).append((path, line_no))
