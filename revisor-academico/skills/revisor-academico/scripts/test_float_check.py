@@ -174,6 +174,22 @@ class TestFloatCheckDetection(unittest.TestCase):
         self.assertIn("ambiente `table` sem `\\caption`", r.stdout)
         self.assertNotIn("e sem", r.stdout)  # only ONE item missing, no join
 
+    def test_short_caption_form_is_recognized(self):
+        # Fix-round-2 regression guard: \caption[short]{long} (the standard
+        # short-caption form, used when the List-of-Figures entry should
+        # differ from the full caption) must be recognized as a REAL
+        # caption -- must NOT be flagged as missing \caption.
+        d = self._project(
+            "\\begin{figure}\\includegraphics{ok.png}"
+            "\\caption[Short entry]{Long caption text}"
+            "\\label{fig:ok}\\end{figure}"
+        )
+        with open(os.path.join(d, "ok.png"), "w") as f:
+            f.write("x")
+        r = run("float_check.py", d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("nenhum problema de floats, imagens ou tabelas detectado", r.stdout)
+
     def test_captionsetup_is_not_mistaken_for_caption(self):
         # Fix-round-1 regression guard: \captionsetup{...} (caption package
         # styling command, common in ABNT templates) must NOT satisfy the

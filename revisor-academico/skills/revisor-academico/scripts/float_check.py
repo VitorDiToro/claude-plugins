@@ -82,15 +82,19 @@ _BOOKTABS_RE = re.compile(r"\\(?:top|mid|bottom)rule\b")
 # enclosing figure/table frame (it's simply not pushed/popped itself).
 #
 # The \caption alternative REQUIRES the opening brace ("\{") right after the
-# optional "*", so it matches \caption{...}/\caption*{...} only -- NOT
-# \captionsetup{...} (the caption package's styling command, very common in
-# ABNT templates) or \captionof{...}{...} (the caption package's out-of-float
-# variant). Without this anchor, \captionsetup{...} would be mistaken for a
-# real caption and silently suppress the "missing \caption" finding.
+# optional "*" and an optional "[short]" argument, so it matches
+# \caption{...}, \caption*{...}, and \caption[short]{...} (the standard
+# short-caption form used when the List-of-Figures entry should differ from
+# the full caption) -- but NOT \captionsetup{...} (the caption package's
+# styling command, very common in ABNT templates) or \captionof{...}{...}
+# (the caption package's out-of-float variant), since neither has a brace
+# (optionally preceded by a "[...]" group) directly after "\caption"/
+# "\caption*". Without this anchor, \captionsetup{...} would be mistaken for
+# a real caption and silently suppress the "missing \caption" finding.
 _ENV_EVENT_RE = re.compile(
     r"\\begin\{(?P<begin>figure\*?|table\*?|tabular\*?|tabularx)\}"
     r"|\\end\{(?P<end>figure\*?|table\*?|tabular\*?|tabularx)\}"
-    r"|\\caption\*?\{"
+    r"|\\caption\*?(?:\[[^\]]*\])?\{"
     r"|\\label\{[^}]*\}"
     r"|\\\\"
 )
