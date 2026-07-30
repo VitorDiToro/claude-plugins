@@ -16,13 +16,15 @@ Pedir "revise este texto" costuma devolver uma resposta corrida no chat. Esta sk
 uma **saída estruturada, localizada e navegável**, e — deliberadamente — **não corrige** o
 documento: quem decide o que acatar é você.
 
-- a revisão é composta por **duas revisões independentes, consolidadas num
-  único resultado** — reduz a chance de um problema real passar despercebido,
-  mas não é garantia de cobertura completa;
-- os dois revisores compartilham um **perfil de padrão do documento** (estilo
-  de citação, especificadores de float, convenção de rótulos, etc.), extraído
-  uma única vez, para não divergirem sobre qual é a convenção interna do
-  documento;
+- a revisão passa por **categorias especializadas de mandato disjunto**, uma de cada vez
+  (LaTeX, gramática, terminologia, estrutura, conteúdo técnico, referências) — cada categoria
+  recebe atenção dedicada, o que reduz a chance de um problema real passar despercebido, mas
+  não é garantia de cobertura completa;
+- antes de revisar, a skill monta um **dossiê determinístico** do documento: manifesto de
+  arquivos, **perfil de padrão** (estilo de citação, especificadores de float, convenção de
+  rótulos, etc.) e **sinais objetivos** já localizados (referências cruzadas, bibliografia,
+  floats, siglas, ortografia) — extraídos **uma única vez**, para que a revisão parta sempre
+  dos mesmos fatos e não divirja sobre qual é a convenção interna do documento;
 - opcionalmente, verifica **conformidade com um enunciado, rubric ou norma
   externa**, se você fornecer um na hora do pedido (ver "Conformidade com um
   enunciado ou rubric" abaixo);
@@ -30,6 +32,18 @@ documento: quem decide o que acatar é você.
 - cada apontamento com **localização exata** (`arquivo:linha`), problema e sugestão;
 - itens ordenados por **severidade** e com **ID único** para referência;
 - **nenhuma edição** aplicada aos seus arquivos-fonte.
+
+## Pré-requisitos
+
+Antes de revisar, a skill roda uma etapa determinística local (a Fase 0), então o ambiente
+precisa de:
+
+- **`python3`** disponível no `PATH`;
+- **`hunspell`** + o dicionário **`pt_BR`** (usados na checagem de ortografia).
+
+Sem eles a revisão **aborta logo no início**, com uma mensagem dizendo o que instalar. No
+Debian/Ubuntu: `sudo apt-get install hunspell hunspell-pt-br` (no Windows/macOS, instale o
+`hunspell` e o dicionário pt-BR antes de pedir a revisão).
 
 ## Como usar
 
@@ -41,18 +55,20 @@ Revise este relatório em LaTeX.
 
 A skill vai:
 
-1. Localizar o arquivo principal (`\documentclass`) e seguir todos os `\input`/`\include`,
-   resolvendo a lista de arquivos uma única vez, e calcular o perfil de padrão do documento,
-   incluindo identificar o padrão normativo aplicável (seleção explícita do usuário ou
-   calibração automática).
-2. Despachar **2 revisores independentes, em paralelo** — cada um usa o perfil de padrão
-   compartilhado para os fatos objetivos, recebe os arquivos de referência aplicáveis
-   quando um padrão normativo foi reconhecido, detecta de forma independente os aspectos que
-   exigem leitura semântica (tom, domínio técnico, rigor argumentativo), e revisa por todo
-   o checklist, sem saber da existência do outro.
-3. Despachar um **consolidador** que une os achados dos dois revisores, resolve
-   divergências de severidade e escreve a pasta `revisao/` final.
-4. Reportar o caminho, a contagem por severidade e as fragilidades mais graves.
+1. **Montar um dossiê determinístico** (Fase 0): localizar o arquivo principal
+   (`\documentclass`), seguir todos os `\input`/`\include` resolvendo a lista de arquivos uma
+   única vez, calcular o perfil de padrão e a **classificação normativa** do documento
+   (seleção explícita do usuário ou reconhecimento automático), e rodar as checagens
+   objetivas — referências cruzadas, bibliografia, floats, siglas e ortografia
+   (`hunspell -d pt_BR`) — todas já ancoradas a `arquivo:linha`. Arquivos `.tex` que existem
+   no projeto mas não são alcançados a partir do principal são sinalizados como órfãos.
+2. **Ler o dossiê uma vez** e percorrer as **categorias de revisão em sequência** — LaTeX,
+   gramática, terminologia, estrutura/rigor acadêmico, conteúdo técnico, referências e
+   (opcional) conformidade com requisitos. Cada categoria adjudica os sinais objetivos do
+   dossiê (são candidatos, não vereditos — a skill decide caso a caso o que é erro real) e faz
+   a leitura semântica que só um revisor consegue (tom, domínio técnico, rigor argumentativo),
+   escrevendo direto no arquivo da sua categoria.
+3. Reportar o caminho da pasta `revisao/`, a contagem por severidade e as fragilidades mais graves.
 
 ### Conformidade com um enunciado ou rubric
 
@@ -67,9 +83,9 @@ quatro aplicações integradas (LiDAR, coleira, armadilha, controlador de cargas
 testadas em cada aplicação.
 ```
 
-Nesse caso, a skill extrai uma lista de requisitos do texto fornecido (uma única vez,
-compartilhada pelos 2 revisores e pelo consolidador) e passa a gerar também
-`07_conformidade_requisitos.md`, com os requisitos não atendidos. Requisitos externos têm
+Nesse caso, a skill embute o texto **bruto** do enunciado no dossiê (§7) e, no passe de
+conformidade, extrai dele a lista de requisitos e gera `07_conformidade_requisitos.md`, com os
+requisitos não atendidos. Requisitos externos têm
 prioridade sobre o padrão interno do documento — se o enunciado pede algo que o documento não
 faz, isso é um apontamento real, mesmo que o documento seja consistente consigo mesmo sobre
 não fazer aquilo. Sem enunciado/rubric mencionado, o comportamento é o mesmo de sempre — este
@@ -181,7 +197,9 @@ nenhum dos padrões nomeados.
 
 ## Nota de desenvolvimento
 
-A skill foi construída com o `superpowers:writing-skills` (ciclo RED/GREEN/REFACTOR). O
-baseline mostrou que, sem a skill, o agente encontra os problemas mas entrega tudo **inline
-no chat**, sem os arquivos estruturados. A skill fixa o **contrato de saída** e foi validada
-com teste em subagente sobre uma amostra LaTeX com problemas plantados.
+A skill fixa um **contrato de saída** estruturado: o baseline mostrou que, sem ela, o agente
+até encontra os problemas mas entrega tudo **inline no chat**, sem os arquivos navegáveis. A
+**v2.0** reescreveu o fluxo para rodar como uma única conversa sequencial dentro do *prompt
+cache* do Claude Code, apoiada numa **camada determinística de scripts** (a Fase 0) que monta
+o dossiê. Além dos testes unitários dessa camada, ela foi validada **ponta a ponta contra um
+relatório real** — porque o portão de qualidade não são os testes, é a revisão do artefato real.
