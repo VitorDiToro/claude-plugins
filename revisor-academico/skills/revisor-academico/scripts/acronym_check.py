@@ -96,14 +96,27 @@ _MASCULINE_ARTICLES = {"o", "ao", "aos", "os", "um", "uns"}
 # label/ref/cite key, macro name, package/class/file name) rather than
 # running prose. A sigla-shaped token inside one of these spans (e.g. a bib
 # key like "IEEE2020") must never be treated as a prose usage/expansion.
+# `acro`'s own \acro{SIGLA}{Full name} correctly belongs here: the sigla
+# itself IS the first argument, so protecting only arg-1 is exactly right --
+# unlike the two commands below, whose sigla lives in a LATER argument.
 _NONPROSE_COMMANDS = (
     "label", "ref", "eqref", "autoref", "cref", "Cref",
     "cite", "citep", "citet", "citeauthor", "citeyear", "nocite",
     "input", "include", "includegraphics", "usepackage", "documentclass",
     "bibliography", "bibliographystyle",
-    "begin", "end", "newcommand", "renewcommand",
-    "DeclareAcronym", "acro", "newacronym",
+    "begin", "end", "newcommand", "renewcommand", "acro",
 )
+
+# Multi-argument acronym-DECLARATION commands where the sigla lives in a
+# LATER brace group, not the first: glossaries' \newacronym{label}{ABBRV}
+# {Full name} (sigla in arg 2) and acro's \DeclareAcronym{label}{short =
+# SIGLA, long = ...} (sigla inside arg 2's value). Protecting only the first
+# group (as _NONPROSE_COMMANDS does) would leave the sigla itself exposed as
+# a bare prose token, producing a false "used before expansion" finding that
+# cites the declaration line. So for these, ALL consecutive {...} groups
+# right after the command (and its optional [...] group) are protected, not
+# just the first -- see _nonprose_spans.
+_MULTI_ARG_NONPROSE_COMMANDS = ("newacronym", "DeclareAcronym")
 
 
 # --- brace-aware plumbing-span scan (parity with foreign_terms._italic_spans) -
@@ -131,27 +144,64 @@ def _match_brace(line, i):
     return None
 
 
+def _skip_optional_option(line, i):
+    """If line[i] == '[', skip past the matching ']' (e.g. \\cite[p.3]{key},
+    \\newacronym[key=val]{...}...). Returns the new index, or None if the
+    option group is unbalanced on this line (caller should give up on this
+    occurrence rather than guess)."""
+    n = len(line)
+    if i < n and line[i] == "[":
+        end_opt = line.find("]", i)
+        if end_opt == -1:
+            return None
+        return _skip_ws(line, end_opt + 1)
+    return i
+
+
+def _brace_group_after(line, i):
+    """If line[i] == '{', return ((content_start, content_end), i_past_close)
+    for the matched group. Otherwise return (None, i) unchanged."""
+    if i < len(line) and line[i] == "{":
+        start = i + 1
+        end = _match_brace(line, i)
+        if end is not None:
+            return (start, end - 1), end
+    return None, i
+
+
 def _nonprose_spans(line):
-    """Return [(start, end), ...] character spans covering the FIRST {...}
-    argument of each _NONPROSE_COMMANDS occurrence on this line. A sigla-
-    shaped token inside one of these spans is plumbing, not prose, and must
-    not be reported as a usage/expansion/gender candidate."""
+    """Return [(start, end), ...] character spans covering plumbing argument
+    text -- not running prose -- so a sigla-shaped token there is never
+    reported as a usage/expansion/gender candidate:
+      - the FIRST {...} argument of each _NONPROSE_COMMANDS occurrence
+        (environment name, label/ref/cite key, macro name, package/class/
+        file name, or \\acro's own SIGLA argument);
+      - EVERY consecutive {...} argument of each _MULTI_ARG_NONPROSE_COMMANDS
+        occurrence (\\newacronym/\\DeclareAcronym), because their sigla lives
+        in a later group, not the first."""
     spans = []
+
     for cmd in _NONPROSE_COMMANDS:
         for m in re.finditer(r"\\%s\*?\b" % re.escape(cmd), line):
-            i = _skip_ws(line, m.end())
-            n = len(line)
-            # Skip an optional "[...]" option group (e.g. \cite[p.3]{key}).
-            if i < n and line[i] == "[":
-                end_opt = line.find("]", i)
-                if end_opt == -1:
-                    continue
-                i = _skip_ws(line, end_opt + 1)
-            if i < n and line[i] == "{":
-                start = i + 1
-                end = _match_brace(line, i)
-                if end is not None:
-                    spans.append((start, end - 1))
+            i = _skip_optional_option(line, _skip_ws(line, m.end()))
+            if i is None:
+                continue
+            span, _i = _brace_group_after(line, i)
+            if span is not None:
+                spans.append(span)
+
+    for cmd in _MULTI_ARG_NONPROSE_COMMANDS:
+        for m in re.finditer(r"\\%s\*?\b" % re.escape(cmd), line):
+            i = _skip_optional_option(line, _skip_ws(line, m.end()))
+            if i is None:
+                continue
+            while True:
+                span, i = _brace_group_after(line, i)
+                if span is None:
+                    break
+                spans.append(span)
+                i = _skip_ws(line, i)
+
     return spans
 
 

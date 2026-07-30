@@ -151,6 +151,28 @@ class TestAcronymDetection(unittest.TestCase):
         self.assertNotIn("Sigla usada antes", r.stdout)
         self.assertIn("Expansão manual", r.stdout)
 
+    def test_newacronym_declaration_does_not_produce_false_used_before(self):
+        # \newacronym{label}{ABBRV}{Full Name} (glossaries package) puts the
+        # sigla in the 2ND brace group. Before the fix, _nonprose_spans only
+        # protected the FIRST group, so "RAM" in this declaration line read
+        # as a bare prose token -- the earliest such token in the corpus --
+        # producing a false "used before expansion" finding that cited the
+        # declaration line itself.
+        d = self._project([
+            "\\newacronym{ram}{RAM}{Random Access Memory}",
+            "Usamos RAM no projeto.",
+            "Depois, Random Access Memory (RAM) novamente.",
+        ])
+        r = run("acronym_check.py", d)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        # The declaration line (line 3) must never be cited as a sigla
+        # occurrence -- its arguments are plumbing, not prose.
+        self.assertNotIn("main.tex:3`", r.stdout)
+        # Real prose behavior is unaffected: line 4's genuine bare "RAM"
+        # usage, occurring before the manual expansion on line 5, is still
+        # correctly flagged as "used before expansion".
+        self.assertIn("main.tex:4` — sigla `RAM` usada antes", r.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
