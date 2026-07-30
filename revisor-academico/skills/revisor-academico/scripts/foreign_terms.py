@@ -58,18 +58,18 @@ GLOSSARY = {
     "throughput", "latency", "downlink", "uplink", "handover", "handshake",
     "oversampling", "downsampling", "upsampling", "clock", "timestamp",
     "log", "logs", "logging", "token", "tokens", "endpoint", "endpoints",
-    "framework", "workflow", "workflows", "workaround", "template", "templates",
+    "workflow", "workflows", "workaround", "template", "templates",
     "wrapper", "wrappers", "callback", "callbacks", "feedback", "loopback",
     "default", "defaults", "trade-off", "tradeoff", "trade-offs",
     "state-of-the-art", "state of the art", "know-how",
     "e-mail", "email", "online", "offline", "real-time", "realtime",
     "chip", "chips", "layout", "setup", "set-up", "backup", "back-up",
     "script", "scripts", "scripting", "loop", "loops", "array", "arrays",
-    "bit", "bits", "byte", "bytes", "clusters", "cluster", "clusters",
+    "bit", "bits", "byte", "bytes", "clusters", "cluster",
     "spread spectrum", "bitstream", "datapath", "testbed", "testbench",
     # research-writing vocabulary
     "paper", "papers", "abstract", "background", "insight", "insights",
-    "survey", "review", "trade-off", "state-of-the-art",
+    "survey", "review",
 }
 
 # Terms that are English but are proper nouns / brands / product or language
