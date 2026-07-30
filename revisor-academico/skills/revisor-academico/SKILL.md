@@ -121,15 +121,19 @@ leia antes de escrever.** Categorias e donos:
 > (a Fase 0 bloqueia sem eles). Ver `## Invariantes de cache`.
 
 **Fase 0 — dossiê determinístico.** Rode `python3 scripts/build_dossier.py <dir-do-projeto>`
-(no Windows, `python` ou `py -3`). Ele verifica os pré-requisitos bloqueantes (aborta com
-mensagem acionável se faltar), monta o `dossie.md` em disco e imprime **só o caminho** no stdout.
-**Não capture o conteúdo do dossiê pela saída do Bash** — ele será lido uma única vez na Fase 1.
-Se `build_dossier.py` abortar, reporte ao usuário e **não avance**.
+(no Windows, `python` ou `py -3`). **Se o usuário forneceu um enunciado/rubrica**, passe-o como
+**2º argumento**: `python3 scripts/build_dossier.py <dir-do-projeto> <arquivo-de-enunciado>` —
+sem esse argumento, §7 **não é gerado** e o passe 7 (conformidade REQ) nunca roda. Ele verifica
+os pré-requisitos bloqueantes (aborta com mensagem acionável se faltar), monta o `dossie.md` em
+disco e imprime **só o caminho** no stdout. **Não capture o conteúdo do dossiê pela saída do
+Bash** — ele será lido uma única vez na Fase 1. Se `build_dossier.py` abortar, reporte ao
+usuário e **não avance**.
 
 **Fase 1 — leia o dossiê uma vez.** Um único `Read` do `dossie.md` (o único preço cheio da
 revisão). Seções: §1 manifesto (+ sinal de arquivos órfãos), §2 perfil de padrão, §3
 classificação normativa, §4 análise textual, §5 candidatos objetivos, §6 corpus normalizado
-ancorado, §7 requisitos externos (enunciado bruto, se fornecido).
+ancorado, §7 requisitos externos (enunciado bruto, **só presente se o 2º argumento da Fase 0 foi
+fornecido**).
 
 **Fase 2 — 7 passes, um turno cada, escrevendo direto o arquivo da categoria.** Carregue
 `references/checklist-revisao.md` uma vez e atue **só no recorte do passe** (TAG `passe: N`).

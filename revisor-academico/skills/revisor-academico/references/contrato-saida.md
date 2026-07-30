@@ -61,7 +61,7 @@ A frase não exibirá o número da seção e cria uma definição duplicada do r
 ---
 ```
 
-Separe os itens com `---`. Use `arquivo:linha` reais — todos vêm da âncora do §6 do dossiê
+Separe os itens com `---`. Use `arquivo:linha` reais — vêm das âncoras do §5/§6 do dossiê
 (formato `latex_corpus.anchor()`); não invente linhas nem reabra o `.tex`.
 
 ## Numeração: escritor único vs. múltiplos escritores

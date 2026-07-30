@@ -49,7 +49,8 @@
 **Bibliografia e citações**
 > Os itens com respaldo de script (chave `\cite` órfã, entrada `.bib` nunca citada, campo
 > essencial ausente por tipo, DOI condicional, formato) são **adjudicação dos candidatos do §5**
-> (`crossref_check.py` + `bib_check.py`) — não varredura do zero.
+> (`bib_check.py`) — não varredura do zero. (`crossref_check.py` não toca `.bib`/`\cite`; cobre
+> `\label`/`\ref`.)
 - Existência de seção de Referências; citações `\cite` sem entrada
   correspondente.
 - DOI ausente em referências quando outras entradas do mesmo tipo já têm.
@@ -136,9 +137,10 @@
 <!-- passe: 3 (T) -->
 
 > Os blocos com respaldo de script (anglicismos via `foreign_terms.py`; acrônimos via
-> `acronym_check.py`; unidades / separador decimal via `lexicon_check.py`) **adjudicam os
-> candidatos do §5** — não varrem do zero. Em especial, **não varra anglicismos à mão**: isso
-> desperdiça o recall de 100% do `foreign_terms.py`.
+> `acronym_check.py`; separador decimal via `lexicon_check.py`) **adjudicam os candidatos do
+> §5** — não varrem do zero. Em especial, **não varra anglicismos à mão**: isso desperdiça o
+> recall de 100% do `foreign_terms.py`. Unidades grafadas de formas diferentes **não** têm
+> respaldo de script (ver nota em "Unidades e formatos numéricos" abaixo).
 
 **Grafia e padronização de termos**
 - Grafias divergentes do mesmo termo (ex.: front-end/frontend/Backend);
@@ -151,8 +153,12 @@
   "Python", "Docker") não entram em itálico mesmo sendo em inglês.
 
 **Acrônimos e siglas**
-- Sigla usada antes de ser expandida na 1ª ocorrência; sigla nunca
-  expandida.
+- Sigla usada antes de ser expandida na 1ª ocorrência (respaldo de script,
+  `acronym_check.py`). Sigla nunca expandida em lugar nenhum é **julgamento
+  do revisor** — não é candidato do §5 (`acronym_check.py` exclui esse caso
+  deliberadamente, por não conseguir distinguir com segurança uma sigla
+  genuinamente indefinida de um token maiúsculo incidental; use as contagens
+  de siglas de §2/`pattern_profile.py` como apoio).
 - Expansão da sigla **digitada manualmente** no texto (ex.: "Interface de
   Programação de Aplicações (API)") em vez de gerida por um comando de
   acrônimo (`\ac{...}` do pacote `acro`/`acronym`). **Sinalizar sempre como
@@ -176,8 +182,12 @@
   outras (ex.: "framework" vs "arcabouço").
 
 **Unidades e formatos numéricos**
-- Separador decimal inconsistente (vírgula vs ponto); unidades grafadas de
-  formas diferentes (ex.: "MB" vs "Mb").
+- Separador decimal inconsistente (vírgula vs ponto) — respaldo de script,
+  `lexicon_check.py`, adjudicação de candidato do §5.
+- Unidades grafadas de formas diferentes (ex.: "MB" vs "Mb") — **julgamento
+  do revisor, não candidato do §5**: `lexicon_check.py` não cobre esse caso
+  (seu limiar mínimo de grafia e sua guarda de maiúscula descartam tokens de
+  unidade de 2–4 caracteres).
 
 ## Estrutura e rigor acadêmico
 <!-- passe: 4 (E) -->
