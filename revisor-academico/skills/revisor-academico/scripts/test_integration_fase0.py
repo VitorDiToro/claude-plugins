@@ -147,10 +147,30 @@ class TestIntegrationFase0(unittest.TestCase):
         )
 
     def test_orphan_chapter_listed_in_section_1(self):
-        sec1_start = self.frozen.index("§1")
-        sec2_start = self.frozen.index("§2")
-        sec1_body = self.frozen[sec1_start:sec2_start]
-        self.assertIn("capitulos/orfao.tex", sec1_body)
+        # Asserts against self.fresh (the LIVE pipeline run over the fixture),
+        # not just the frozen golden -- a golden-only check is always true
+        # regardless of what the pipeline does today, so it would silently
+        # pass straight through a real orphan-detection regression (e.g. §1
+        # falling back to "(nenhum arquivo órfão detectado)"). Neither the
+        # anchor nor the header-sequence test would catch that either: the
+        # orphan bullet "- `capitulos/orfao.tex`" carries no ":line" suffix
+        # (not anchor-shaped) and isn't a header line. The frozen check is
+        # kept alongside as a bonus sanity check on the golden file itself,
+        # but the fresh assertion is the one that actually guards a
+        # regression.
+        fresh_sec1_start = self.fresh.index("§1")
+        fresh_sec2_start = self.fresh.index("§2")
+        fresh_sec1_body = self.fresh[fresh_sec1_start:fresh_sec2_start]
+        self.assertIn(
+            "capitulos/orfao.tex", fresh_sec1_body,
+            "orphan diff regressed: capitulos/orfao.tex missing from the "
+            "FRESH pipeline run's §1 (not just the frozen golden)",
+        )
+
+        frozen_sec1_start = self.frozen.index("§1")
+        frozen_sec2_start = self.frozen.index("§2")
+        frozen_sec1_body = self.frozen[frozen_sec1_start:frozen_sec2_start]
+        self.assertIn("capitulos/orfao.tex", frozen_sec1_body)
 
     def test_section_5_precedes_section_6(self):
         headers = _extract_normalized_headers(self.frozen)
