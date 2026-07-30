@@ -1,0 +1,22 @@
+% main.tex -- projeto de teste (fixture) para o dossie de referencia da Fase 0
+% do revisor-academico. Nao e um TCC real: e um mini-projeto LaTeX construido
+% para exercitar, com um caso conhecido, cada uma das checagens objetivas do
+% pipeline (crossref_check, bib_check, float_check, acronym_check,
+% lexicon_check, foreign_terms, spell_check, pattern_profile, text_analysis).
+\documentclass{article}
+\usepackage{float}
+\usepackage[brazil]{babel}
+
+% Capitulo orfao: mantido em disco propositalmente, mas nunca incluido no
+% corpo do documento -- o \include abaixo fica comentado de proposito, para
+% exercitar o diff de arquivos orfaos do dossie (glob-all - manifesto).
+% \include{capitulos/orfao}
+
+\begin{document}
+
+\include{capitulos/cap1}
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
