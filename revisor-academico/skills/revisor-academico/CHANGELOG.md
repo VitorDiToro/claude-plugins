@@ -4,7 +4,7 @@ All notable changes to the `revisor-academico` skill are recorded here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 the `metadata.version` / `metadata.updated` fields in `SKILL.md` frontmatter point to the latest entry.
 
-## 2.0.0 - 2026-07-29
+## 2.0.0 - 2026-07-30
 
 > **⚠️ BREAKING — leia antes de atualizar da v1.7.0.** Dois contratos de execução mudaram:
 >

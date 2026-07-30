@@ -17,7 +17,7 @@ allowed-tools:
   - Agent
 metadata:
   version: 2.0.0
-  updated: 2026-07-29
+  updated: 2026-07-30
 ---
 
 # Revisão de relatório acadêmico em LaTeX (ABNT)
