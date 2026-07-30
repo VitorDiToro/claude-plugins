@@ -1,5 +1,6 @@
 # test_spell_check.py
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -7,6 +8,9 @@ import tempfile
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+
+import spell_check  # unit-level access to _clean_prose_line (no hunspell involved)
 
 
 def run(script, d):
@@ -68,6 +72,63 @@ class TestSpellPrereq(unittest.TestCase):
             any(hint in r.stderr for hint in ("apt", "dnf", "brew")),
             "stderr deveria trazer um comando de instalação acionável: %r" % r.stderr,
         )
+
+
+class TestSpellCheckProseExtraction(unittest.TestCase):
+    """Unit-level coverage of the prose-extraction step (_clean_prose_line),
+    with NO hunspell involved at all -- runs in ANY environment, including
+    this hunspell-absent sandbox, since it only exercises spell_check's own
+    LaTeX cleanup. Guards against structural/plumbing command arguments
+    (environment names, label/ref/cite keys, filenames) leaking into the
+    text that gets spell-checked, while prose-bearing commands' argument
+    text must still survive."""
+
+    @staticmethod
+    def _words(raw):
+        cleaned = spell_check._clean_prose_line(raw)
+        return re.findall(r"[A-Za-zÀ-ÿ]+", cleaned)
+
+    def test_documentclass_argument_is_excluded(self):
+        words = self._words("\\documentclass{article}")
+        self.assertNotIn("article", words)
+
+    def test_begin_end_environment_name_is_excluded(self):
+        self.assertNotIn("document", self._words("\\begin{document}"))
+        self.assertNotIn("document", self._words("\\end{document}"))
+
+    def test_label_and_ref_keys_are_excluded_prose_kept(self):
+        words = self._words(
+            "Conforme mostrado na Figura \\ref{fig:diagrama}, o sistema funciona bem."
+        )
+        self.assertNotIn("fig", words)
+        self.assertNotIn("diagrama", words)
+        self.assertIn("Conforme", words)
+        self.assertIn("sistema", words)
+        self.assertIn("funciona", words)
+
+    def test_includegraphics_filename_is_excluded(self):
+        words = self._words(
+            "Veja \\includegraphics[scale=0.5]{img.png} abaixo para detalhes."
+        )
+        self.assertNotIn("img", words)
+        self.assertNotIn("png", words)
+        self.assertIn("Veja", words)
+        self.assertIn("abaixo", words)
+        self.assertIn("detalhes", words)
+
+    def test_cite_key_is_excluded(self):
+        words = self._words("Segundo \\cite{silva2020}, os resultados divergem.")
+        self.assertNotIn("silva", words)
+        self.assertIn("Segundo", words)
+        self.assertIn("resultados", words)
+        self.assertIn("divergem", words)
+
+    def test_prose_bearing_commands_keep_their_argument_text(self):
+        # textbf/emph/etc. are deliberately NOT in _NONPROSE_COMMANDS -- their
+        # argument text is real prose and must survive untouched.
+        words = self._words("Este é um \\textbf{termo} muito importante.")
+        self.assertIn("termo", words)
+        self.assertIn("importante", words)
 
 
 @unittest.skipUnless(_has_ptbr(), "hunspell+pt_BR ausente")

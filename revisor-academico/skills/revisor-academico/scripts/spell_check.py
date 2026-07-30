@@ -23,6 +23,19 @@
 #     Never rely on hunspell's default dictionary (locale-dependent, may not
 #     even be Portuguese on the machine running this script).
 #
+#   - Every subprocess.run(...) call to hunspell pins `encoding="utf-8",
+#     errors="replace"` explicitly, alongside `text=True`. Without an
+#     explicit `encoding=`, Python falls back to the LOCALE's preferred
+#     encoding for both directions of the pipe -- under a non-UTF-8 locale
+#     (e.g. `LC_ALL=C`, common in minimal CI containers) that is ASCII, and
+#     accented Portuguese prose piped to hunspell's stdin raises an uncaught
+#     UnicodeEncodeError (a ValueError subclass, NOT an OSError, so it is NOT
+#     caught by the `except OSError` guards below) -- a real crash, violating
+#     this layer's "never raise" contract. On Windows the locale encoding is
+#     typically cp1252, which would silently mis-decode accented output
+#     instead of crashing. Pinning UTF-8 (matching latex_corpus.read_text and
+#     the stdout reconfigure in __main__) fixes both failure modes.
+#
 #   - Word -> source-line mapping. hunspell's simplest output mode, `-l`
 #     ("list misspelled words, one per output line, in the order
 #     encountered"), does NOT tag each flagged word with the input line it
@@ -100,7 +113,10 @@ def _hunspell_ptbr_available():
     if shutil.which(_HUNSPELL_BIN) is None:
         return False
     try:
-        proc = subprocess.run([_HUNSPELL_BIN, "-D"], capture_output=True, text=True)
+        proc = subprocess.run(
+            [_HUNSPELL_BIN, "-D"], capture_output=True,
+            text=True, encoding="utf-8", errors="replace",
+        )
     except OSError:
         return False
     return _DICT in (proc.stdout + proc.stderr)
@@ -128,16 +144,130 @@ _INSTALL_HINT = (
 )
 
 
+# --- non-prose command-argument exclusion ------------------------------------
+#
+# latex_corpus.strip_commands() removes only the command NAME (by design --
+# see latex_corpus.py's own parity note), KEEPING {...} argument text, so
+# real prose survives (\textbf{antena} -> antena). That is exactly right for
+# prose-bearing commands, but WRONG for structural/plumbing commands whose
+# argument is not prose at all: \documentclass{article} would otherwise leak
+# "article" into the spell-checked text, \label{fig:diagrama} would leak
+# "fig"/"diagrama", \includegraphics{img.png} would leak "img"/"png", and so
+# on -- flooding a real thesis with false spelling candidates that are
+# nothing but environment names, label/ref/cite keys, and filenames.
+#
+# The fix: before handing a line to strip_commands, blank out (replace with
+# spaces) the {...} argument of every _NONPROSE_COMMANDS occurrence, using
+# the same brace-aware span-scanning approach as acronym_check.py's
+# _nonprose_spans (duplicated here, not imported, for the same
+# independently-runnable-script reason as the rest of this module).
+# Prose-bearing commands (textbf, textit, emph, section, caption, ...) are
+# NOT in this list, so their argument text is left untouched and still
+# spell-checked, same as before.
+_NONPROSE_COMMANDS = (
+    "documentclass", "usepackage", "begin", "end",
+    "label", "ref", "cref", "Cref", "eqref", "autoref",
+    "cite", "citep", "citet", "citeauthor", "citeyear", "nocite",
+    "includegraphics", "input", "include",
+    "bibliography", "bibliographystyle",
+    "newcommand", "renewcommand",
+    "setcounter", "geometry", "pagestyle",
+)
+
+
+def _skip_ws(line, i):
+    while i < len(line) and line[i] in " \t":
+        i += 1
+    return i
+
+
+def _match_brace(line, i):
+    """Given line[i] == '{', return the index just past the matching '}', or
+    None if unbalanced on this line. Single-line; nested braces supported."""
+    depth = 0
+    n = len(line)
+    while i < n:
+        c = line[i]
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return None
+
+
+def _skip_optional_option(line, i):
+    """If line[i] == '[', skip past the matching ']' (e.g.
+    \\includegraphics[scale=0.5]{...}, \\cite[p.3]{key}). Returns the new
+    index, or None if the option group is unbalanced on this line (caller
+    should give up on this occurrence rather than guess)."""
+    n = len(line)
+    if i < n and line[i] == "[":
+        end_opt = line.find("]", i)
+        if end_opt == -1:
+            return None
+        return _skip_ws(line, end_opt + 1)
+    return i
+
+
+def _brace_group_after(line, i):
+    """If line[i] == '{', return ((content_start, content_end), i_past_close)
+    for the matched group. Otherwise return (None, i) unchanged."""
+    if i < len(line) and line[i] == "{":
+        start = i + 1
+        end = _match_brace(line, i)
+        if end is not None:
+            return (start, end - 1), end
+    return None, i
+
+
+def _nonprose_spans(line):
+    """Return [(start, end), ...] character spans covering the FIRST {...}
+    argument of every _NONPROSE_COMMANDS occurrence on `line` -- environment
+    names, label/ref/cite keys, package/class/file names -- so that argument
+    text is excluded from the spell-checked prose."""
+    spans = []
+    for cmd in _NONPROSE_COMMANDS:
+        for m in re.finditer(r"\\%s\*?\b" % re.escape(cmd), line):
+            i = _skip_optional_option(line, _skip_ws(line, m.end()))
+            if i is None:
+                continue
+            span, _i = _brace_group_after(line, i)
+            if span is not None:
+                spans.append(span)
+    return spans
+
+
+def _blank_spans(line, spans):
+    """Return `line` with every character inside `spans` replaced by a
+    space, preserving length/positions. Applied BEFORE the generic
+    comment/command/brace cleanup below, so excluded argument text never
+    survives into the extracted prose."""
+    if not spans:
+        return line
+    chars = list(line)
+    n = len(chars)
+    for start, end in spans:
+        for i in range(start, min(end, n)):
+            chars[i] = " "
+    return "".join(chars)
+
+
 def _clean_prose_line(raw):
-    """Comment- and command-stripped prose, with residual braces/control
-    symbols turned into spaces. Duplicated from (not imported off of)
-    latex_corpus's private text-cleaning logic: latex_corpus deliberately
-    keeps that helper private to iter_sentences, so -- mirroring
-    lexicon_check.py's own documented duplication of _build_alternation_regex
-    -- this script re-implements the small amount of logic it needs locally.
-    Every Fase-0 script depends only on latex_corpus, never on a sibling
-    script, so each one stays independently runnable/movable."""
-    line = latex_corpus.strip_commands(latex_corpus.strip_comment(raw))
+    """Comment- and command-stripped prose, with non-prose command arguments
+    and residual braces/control symbols turned into spaces. Duplicated from
+    (not imported off of) latex_corpus's private text-cleaning logic:
+    latex_corpus deliberately keeps that helper private to iter_sentences, so
+    -- mirroring lexicon_check.py's own documented duplication of
+    _build_alternation_regex -- this script re-implements the small amount of
+    logic it needs locally. Every Fase-0 script depends only on latex_corpus,
+    never on a sibling script, so each one stays independently
+    runnable/movable."""
+    line = latex_corpus.strip_comment(raw)
+    line = _blank_spans(line, _nonprose_spans(line))
+    line = latex_corpus.strip_commands(line)
     line = line.replace("{", " ").replace("}", " ")
     line = _CONTROL_SYMBOL_RE.sub(" ", line)  # \%, \&, \\, ... -> space
     line = line.replace("\\", " ")
@@ -164,7 +294,8 @@ def _scan_file(path):
     try:
         proc = subprocess.run(
             [_HUNSPELL_BIN, "-d", _DICT, "-l"],
-            input=blob, capture_output=True, text=True,
+            input=blob, capture_output=True,
+            text=True, encoding="utf-8", errors="replace",
         )
     except OSError:
         return
